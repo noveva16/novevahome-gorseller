@@ -1,0 +1,59 @@
+{%- comment -%}
+  Noveva Home — Ana sayfa "Plise Perde Serileri" kartları.
+  FİYAT DEĞİŞİRSE: assets/nh-fiyat.js içindeki NH_EK.seriler ile birlikte buradaki satırları da güncelleyin.
+  Biçim: Ad|Etiket|Işık engelleme (0-100, boşsa çubuk gösterilmez)|Açıklama|m² fiyatı|Liste fiyatı|Sayfa linki|Hesaplayıcı seri kodu
+{%- endcomment -%}
+{%- capture nh_seri_liste -%}
+Diamond Serisi|Işığı süzer||Işığı yumuşak süzen klasik plise kumaş. 16 renk.|749|899|/pages/diamond-plise-perde|diamond
+Venüs Serisi|||Venüs serisi plise kumaş.|900|1.300|/products/plise-perde?seri=venus|venus
+Dark Serisi|%85 karartma|85|Güneşi büyük ölçüde keser; oda loş kalır.|1.300|2.000|/pages/dark-plise-perde|dark
+Blackout Plise|%100 karartma|100|Işık geçirmez; yatak ve çocuk odası için ideal.|1.590|2.000|/pages/blackout-plise-perde|blackout
+Honeycomb (Bal Peteği)|%100 karartma|100|Tam karartma + hücreli yapıyla yüksek ısı yalıtımı.|1.800|2.500|/pages/honeycomb-bal-petegi-plise-perde|honeycomb
+{%- endcapture -%}
+{%- assign nh_seriler = nh_seri_liste | strip | newline_to_br | split: '<br />' -%}
+<style>
+  .nh-sr{max-width:1200px;margin:0 auto;padding:0 16px}
+  .nh-sr h2{text-align:center;margin:0 0 6px}
+  .nh-sr .nh-sr-alt{text-align:center;opacity:.75;margin:0 0 22px;font-size:1.5rem}
+  .nh-sr-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+  .nh-sr-kart{display:flex;flex-direction:column;gap:6px;border:1px solid rgba(0,0,0,.1);border-radius:14px;padding:16px;background:rgba(255,255,255,.65)}
+  .nh-sr-kart b.nh-sr-ad{font-size:1.65rem;line-height:1.25}
+  .nh-sr-et{align-self:flex-start;background:#111;color:#fff;border-radius:999px;padding:2px 9px;font-size:1.15rem;font-weight:600;white-space:nowrap}
+  .nh-sr-et.nh-acik{background:transparent;color:inherit;border:1px solid rgba(0,0,0,.25)}
+  .nh-sr-isik{height:6px;border-radius:999px;background:linear-gradient(90deg,#f6d77a,#f2b33d);overflow:hidden;margin:4px 0 2px}
+  .nh-sr-isik span{display:block;height:100%;background:#1f2328;margin-left:auto}
+  .nh-sr-isik-y{font-size:1.1rem;opacity:.6;display:flex;justify-content:space-between}
+  .nh-sr-ac{font-size:1.3rem;opacity:.8;line-height:1.45;margin:0}
+  .nh-sr-fy{margin-top:auto;padding-top:6px;font-size:1.3rem}
+  .nh-sr-fy s{opacity:.5;margin-right:4px}
+  .nh-sr-fy b{font-size:1.8rem}
+  .nh-sr-btn{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+  .nh-sr-btn a{flex:1;text-align:center;border-radius:999px;padding:8px 10px;font-size:1.25rem;font-weight:600;text-decoration:none;white-space:nowrap}
+  .nh-sr-btn a.nh-sr-hes{background:#111;color:#fff}
+  .nh-sr-btn a.nh-sr-inc{border:1px solid rgba(0,0,0,.25);color:inherit}
+  @media (max-width:1100px){.nh-sr-grid{grid-template-columns:repeat(3,1fr)}}
+  @media (max-width:749px){.nh-sr-grid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0 16px;padding-bottom:6px;margin:0 -16px;padding-left:16px;padding-right:16px}.nh-sr-kart{flex:0 0 72%;scroll-snap-align:start}}
+</style>
+<div class="nh-sr" id="plise-serileri">
+  <h2 class="h1">Plise Perde Serileri</h2>
+  <p class="nh-sr-alt">Işığı süzenden tam karartmaya; ihtiyacına göre kumaşını seç.</p>
+  <div class="nh-sr-grid">
+    {%- for satir in nh_seriler -%}
+      {%- assign s = satir | strip | split: '|' -%}
+      <div class="nh-sr-kart">
+        <b class="nh-sr-ad">{{ s[0] }}</b>
+        {%- if s[1] != blank -%}<span class="nh-sr-et{% if s[2] == blank %} nh-acik{% endif %}">{{ s[1] }}</span>{%- endif -%}
+        {%- if s[2] != blank -%}
+          <div class="nh-sr-isik" role="img" aria-label="Işık engelleme %{{ s[2] }}"><span style="width:{{ s[2] }}%"></span></div>
+          <div class="nh-sr-isik-y"><span>Aydınlık</span><span>Karanlık</span></div>
+        {%- endif -%}
+        <p class="nh-sr-ac">{{ s[3] }}</p>
+        <div class="nh-sr-fy">{% if s[5] != blank %}<s>{{ s[5] }} ₺</s>{% endif %}<b>{{ s[4] }} ₺</b> /m²</div>
+        <div class="nh-sr-btn">
+          <a class="nh-sr-hes" href="/products/plise-perde?seri={{ s[7] }}">Fiyat hesapla</a>
+          {%- unless s[6] contains '/products/' -%}<a class="nh-sr-inc" href="{{ s[6] }}">İncele</a>{%- endunless -%}
+        </div>
+      </div>
+    {%- endfor -%}
+  </div>
+</div>

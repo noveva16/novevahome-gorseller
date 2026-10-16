@@ -1,0 +1,147 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "title": {
+          "type": "title",
+          "settings": {
+            "show_vendor_link": true,
+            "title_size": "h2"
+          }
+        },
+        "nh_hesap": {
+          "type": "custom_liquid",
+          "settings": {
+            "custom_liquid": "{% render 'nh-olcu-hesaplayici', product: product %}"
+          }
+        },
+        "nh_sss": {
+          "type": "custom_liquid",
+          "settings": {
+            "custom_liquid": "{% render 'nh-sss', product: product %}"
+          }
+        },
+        "share": {
+          "type": "share",
+          "settings": {
+            "share_label": "Paylaş",
+            "enable_floating_layout": false,
+            "share_on_facebook": true,
+            "share_on_twitter": true,
+            "share_on_pinterest": true,
+            "share_on_email": true,
+            "share_link": true
+          }
+        }
+      },
+      "block_order": [
+        "title",
+        "nh_hesap",
+        "nh_sss",
+        "share"
+      ],
+      "settings": {
+        "section_width": "page-width",
+        "use_background_input": true,
+        "enable_sticky_info": true,
+        "enable_sticky_cart": false,
+        "sticky_cart": "on_scroll_up",
+        "show_next_prev_products": false,
+        "auto_scroll_up_mobile": false,
+        "inherit_color_scheme": true,
+        "color_scheme": "",
+        "default_image": "product_featured_image",
+        "media_position": "left",
+        "gallery_layout": "thumbnail_slider",
+        "thumbnail_position": "left",
+        "media_size": "small",
+        "image_ratio": "adapt",
+        "image_fit": true,
+        "disable_images_lightbox": false,
+        "mobile_thumbnails": "hide",
+        "hide_variants": false,
+        "enable_video_looping": false,
+        "show_custom_badges_on": "all",
+        "custom_badges_position": "right",
+        "padding_top": 0,
+        "padding_bottom": 40
+      }
+    },
+    "tabs": {
+      "type": "main-product-tabs",
+      "blocks": {
+        "desc": {
+          "type": "description",
+          "settings": {
+            "title": "Ürün Açıklaması",
+            "truncate_description": 0,
+            "read_more_button": "Devamını oku"
+          }
+        }
+      },
+      "block_order": [
+        "desc"
+      ],
+      "settings": {
+        "grid_layout": "grid",
+        "enable_accordion_layout": false,
+        "color_scheme": "background-1",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    },
+    "apps": {
+      "type": "apps",
+      "settings": {
+        "include_margins": true
+      }
+    },
+    "product-recommendations": {
+      "type": "product-recommendations",
+      "settings": {
+        "title": "Diğer Perdelerimiz",
+        "subtitle": "",
+        "heading_size": "h2",
+        "products_to_show": 8,
+        "columns_desktop": 4,
+        "full_width": false,
+        "enable_desktop_slider": true,
+        "color_scheme": "background-1",
+        "image_ratio": "square",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "enable_quick_add": false,
+        "enable_compare": false,
+        "enable_quick_view": false,
+        "show_color_swatches": false,
+        "color_swatches_style": "custom",
+        "inherit_card_color_scheme": true,
+        "card_color_scheme": "",
+        "columns_tablet": "3",
+        "columns_mobile": "1",
+        "swipe_on_mobile": true,
+        "padding_top": 72,
+        "padding_bottom": 40
+      }
+    },
+    "nh_yorumlar": {
+      "type": "custom-liquid",
+      "name": "Müşteri Yorumları",
+      "settings": {
+        "custom_liquid": "{% render 'nh-yorumlar' %}",
+        "color_scheme": "background-1",
+        "padding_top": 24,
+        "padding_bottom": 24
+      }
+    }
+  },
+  "order": [
+    "main",
+    "nh_yorumlar",
+    "tabs",
+    "apps",
+    "product-recommendations"
+  ]
+}
