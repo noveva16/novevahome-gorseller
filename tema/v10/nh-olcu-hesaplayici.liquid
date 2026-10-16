@@ -1,0 +1,297 @@
+{%- comment -%}
+  Noveva Home — Ölçüye özel perde fiyat hesaplayıcı.
+  Ürünün etiketi "nh-plise", "nh-stor", "nh-zebra" veya "nh-ahsap_jaluzi" olmalı.
+  Fiyat, assets/nh-fiyat.js içindeki kurallarla hesaplanır. Sepete "Ölçüye Özel Perde Siparişi"
+  (1 TL birim) ürünü, hesaplanan tutar kadar adetle ve perde bilgileriyle eklenir.
+{%- endcomment -%}
+{%- liquid
+  assign nh_kod = ''
+  for t in product.tags
+    if t == 'nh-plise' or t == 'nh-stor' or t == 'nh-zebra' or t == 'nh-ahsap_jaluzi'
+      assign nh_kod = t | remove_first: 'nh-'
+    endif
+  endfor
+  assign nh_birim = all_products['olcuye-ozel-perde-siparisi']
+  assign nh_secili = product.selected_or_first_available_variant
+-%}
+{%- if nh_kod != '' -%}
+<script src="{{ 'nh-fiyat.js' | asset_url }}"></script>
+<style>
+  .nh-hes{border:1px solid rgba(0,0,0,.1);border-radius:14px;padding:18px;margin:6px 0 10px;background:rgba(var(--color-background,255,255,255),1)}
+  .nh-hes h3{font-size:1.5rem;margin:0 0 10px;letter-spacing:.02em}
+  .nh-sec{margin:0 0 16px}
+  .nh-lbl{display:block;font-weight:600;font-size:1.4rem;margin:0 0 8px}
+  .nh-lbl small{font-weight:400;opacity:.7;margin-left:6px}
+  .nh-renkler{display:flex;flex-wrap:wrap;gap:8px}
+  .nh-renk{border:1px solid rgba(0,0,0,.18);border-radius:999px;padding:7px 14px;font-size:1.35rem;background:transparent;cursor:pointer;color:inherit}
+  .nh-renk[aria-pressed="true"]{border-color:currentColor;box-shadow:0 0 0 1px currentColor;font-weight:600}
+  .nh-nokta{display:inline-block;width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,.25);margin-right:6px;vertical-align:-2px}
+  .nh-olcu{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .nh-olcu label{font-size:1.3rem;display:block;margin-bottom:4px;opacity:.8}
+  .nh-olcu input,.nh-adet input{width:100%;height:46px;border:1px solid rgba(0,0,0,.2);border-radius:10px;padding:0 12px;font-size:1.6rem;background:transparent;color:inherit}
+  .nh-sec-list{display:grid;gap:8px}
+  .nh-opt{display:flex;gap:10px;align-items:flex-start;border:1px solid rgba(0,0,0,.14);border-radius:10px;padding:10px 12px;cursor:pointer}
+  .nh-opt input{margin-top:3px}
+  .nh-opt b{display:block;font-size:1.35rem}
+  .nh-opt small{display:block;font-size:1.2rem;opacity:.75}
+  .nh-opt .nh-ek{margin-left:auto;font-weight:700;white-space:nowrap;font-size:1.3rem}
+  .nh-adet{max-width:140px}
+  .nh-ozet{background:rgba(0,0,0,.035);border-radius:12px;padding:14px;margin:14px 0}
+  .nh-sat{display:flex;justify-content:space-between;gap:10px;font-size:1.35rem;padding:3px 0}
+  .nh-sat span:first-child{opacity:.75}
+  .nh-top{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid rgba(0,0,0,.12);margin-top:8px;padding-top:10px;font-size:1.6rem;font-weight:700}
+  .nh-top b{font-size:2.2rem}
+  .nh-eski{text-decoration:line-through;opacity:.55;font-weight:400;font-size:1.4rem;margin-right:8px}
+  .nh-not{font-size:1.25rem;opacity:.8;margin:6px 0 0}
+  .nh-hata{color:#b42318;font-size:1.35rem;margin:0}
+  .nh-uyari{background:#eef6ff;border:1px solid #b6d4f5;border-radius:10px;padding:10px 12px;font-size:1.3rem;line-height:1.5;margin:10px 0 0}
+  .nh-uyari a{text-decoration:underline;white-space:nowrap}
+  .nh-jumbo{background:#fff6e5;border:1px solid #f5c26b;border-radius:10px;padding:10px 12px;font-size:1.3rem;margin:10px 0}
+  .nh-btn{width:100%;margin-top:6px}
+  .nh-btn[disabled]{opacity:.5;cursor:not-allowed}
+  .nh-wa{display:flex;justify-content:center;align-items:center;gap:8px;width:100%;margin-top:10px;border:1px solid #25D366;color:#128C4B;border-radius:999px;padding:11px;font-weight:600;font-size:1.4rem;text-decoration:none}
+  .nh-guven{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px;font-size:1.25rem;opacity:.85}
+  .nh-m2{font-size:1.4rem;margin:-4px 0 12px}
+  .nh-m2 b{font-size:1.9rem}
+  .nh-etiket{display:inline-block;background:#111;color:#fff;border-radius:999px;padding:1px 8px;font-size:1.1rem;font-weight:600;margin-left:6px;vertical-align:middle}
+  .nh-opt .nh-ek s{opacity:.5;font-weight:400;margin-right:4px}
+</style>
+
+<div class="nh-hes" id="nh-hes" data-kod="{{ nh_kod }}" data-birim="{{ nh_birim.selected_or_first_available_variant.id }}">
+  <div class="nh-m2" id="nh-m2"></div>
+
+  {%- if nh_kod == 'plise' -%}
+  <div class="nh-sec">
+    <span class="nh-lbl">1. Kumaş Serisi</span>
+    <div class="nh-sec-list" id="nh-seri"></div>
+  </div>
+  {%- endif -%}
+
+  <div class="nh-sec">
+    <span class="nh-lbl">{% if nh_kod == 'plise' %}2{% else %}1{% endif %}. Renk <small id="nh-renk-ad">{{ nh_secili.option1 }}</small></span>
+    <div class="nh-renkler" role="group" aria-label="Renk seçimi">
+      {%- for v in product.variants -%}
+        <button type="button" class="nh-renk" data-renk="{{ v.option1 | escape }}" data-media="{{ v.featured_media.id }}" aria-pressed="{% if v.id == nh_secili.id %}true{% else %}false{% endif %}">{{ v.option1 }}</button>
+      {%- endfor -%}
+    </div>
+  </div>
+
+  <div class="nh-sec">
+    <span class="nh-lbl">{% if nh_kod == 'plise' %}3{% else %}2{% endif %}. Ölçünüz (cm) <small><a href="/pages/olcu-nasil-alinir" target="_blank">Ölçü nasıl alınır?</a></small></span>
+    <div class="nh-olcu">
+      <div><label for="nh-en">EN (cm)</label><input id="nh-en" inputmode="decimal" placeholder="{% if nh_kod == 'plise' %}ör. 75{% else %}ör. 120{% endif %}" autocomplete="off"></div>
+      <div><label for="nh-boy">BOY (cm)</label><input id="nh-boy" inputmode="decimal" placeholder="ör. 150" autocomplete="off"></div>
+    </div>
+    {%- if nh_kod == 'plise' -%}
+    <div class="nh-uyari" role="note">
+      <b>Cam balkon hatırlatması:</b> Açılan <b>ilk kanadın</b> EN ölçüsünü <b>2 cm eksik</b> yazın (ör. 75 cm ölçtüyseniz 73 cm). Köşede birleşen iki cam varsa <b>yalnızca birini</b> 2 cm eksik yazın. Diğer kanatları ölçtüğünüz gibi yazın.
+      <a href="/blogs/news/cam-balkon-perde-olcusu-nasil-alinir" target="_blank">Detaylı anlatım</a>
+    </div>
+    {%- endif -%}
+    <p class="nh-not" id="nh-olcu-not"></p>
+  </div>
+
+  {%- if nh_kod == 'plise' -%}
+  <div class="nh-sec">
+    <span class="nh-lbl">4. Profil Rengi <small id="nh-profil-ad">Beyaz</small></span>
+    <div class="nh-renkler" id="nh-profil" role="group" aria-label="Profil rengi"></div>
+  </div>
+  <div class="nh-sec">
+    <span class="nh-lbl">5. Montaj Tipi</span>
+    <div class="nh-sec-list" id="nh-montaj"></div>
+  </div>
+  <div class="nh-sec">
+    <span class="nh-lbl">6. Sistem</span>
+    <div class="nh-sec-list" id="nh-ciftli"></div>
+  </div>
+  {%- endif -%}
+
+  <div class="nh-sec nh-adet">
+    <label class="nh-lbl" for="nh-adet">Adet</label>
+    <input id="nh-adet" type="number" min="1" max="50" value="1">
+  </div>
+
+  <div class="nh-ozet" id="nh-ozet" aria-live="polite"></div>
+
+  <button type="button" class="button nh-btn" id="nh-ekle" disabled>Sepete Ekle</button>
+  <a class="nh-wa" id="nh-wa" href="https://wa.me/905443028616" target="_blank" rel="noopener">WhatsApp ile sor / sipariş ver</a>
+  <div class="nh-guven">
+    <span>✓ Ölçüye özel üretim</span><span>✓ Türkiye geneli ücretsiz kargo</span>
+    <span>✓ 2–4 iş günü üretim</span><span>✓ İnegöl'de yerinde ölçü</span>
+  </div>
+</div>
+
+<script>
+(function () {
+  var kok = document.getElementById('nh-hes'); if (!kok || !window.Pricing) return;
+  var KOD = kok.dataset.kod, BIRIM = kok.dataset.birim, EK = window.NH_EK;
+  var temelKural = window.PricingRules.get(KOD), kural = temelKural;
+  var SERILER = (KOD === 'plise' && EK.seriler) ? EK.seriler : null;
+  var URUN = {{ product.title | json }};
+  var $ = function (id) { return document.getElementById(id); };
+  var tl = function (n) { return window.Pricing.formatTRY(n); };
+  var nf = function (n) { return Number(n).toLocaleString('tr-TR', { maximumFractionDigits: 2 }); };
+  var durum = { renk: {{ nh_secili.option1 | json }}, seri: 'standart', profil: 'Beyaz', montaj: 'kancali', ciftli: 'tekli', tutar: 0, hesap: null };
+
+  // Plise kumaş serisi: adres çubuğunda ?seri=blackout gibi gelirse o seri seçili açılır
+  function seriBul(kod) { return SERILER ? SERILER.filter(function (s) { return s.kod === kod; })[0] : null; }
+  if (SERILER) {
+    var urlSeri = (location.search.match(/[?&]seri=([a-z]+)/) || [])[1];
+    if (urlSeri === 'diamond') urlSeri = 'standart';
+    if (urlSeri && seriBul(urlSeri)) durum.seri = urlSeri;
+  }
+  function kuralGuncelle() {
+    var s = seriBul(durum.seri);
+    kural = s ? Object.assign({}, temelKural, { standardPricePerM2: s.m2, listPricePerM2: s.liste }) : temelKural;
+    // m² fiyat etiketi
+    $('nh-m2').innerHTML = (kural.listPricePerM2 ? '<span class="nh-eski">' + tl(kural.listPricePerM2) + '</span>' : '') +
+      '<b>' + tl(kural.standardPricePerM2) + '</b> / m²' + (s ? ' <small style="opacity:.75">· ' + s.ad + (s.etiket ? ' (' + s.etiket + ')' : '') + '</small>' : '');
+  }
+  kuralGuncelle();
+  var notlar = [];
+  if (kural.minBillableAreaM2) notlar.push('Minimum ' + kural.minBillableAreaM2 + ' m² fiyatlandırılır.');
+  if (kural.widthRoundingStepCm) notlar.push('EN ve BOY üstteki ' + kural.widthRoundingStepCm + ' cm’ye yuvarlanır; minimum EN ' + kural.minBillableWidthCm + ' cm.');
+  if (kural.jumboEnabled) notlar.push(kural.standardMaxWidthCm + ' cm üzeri EN için Jumbo sistem uygulanır (en fazla ' + kural.jumboMaxWidthCm + ' cm).');
+  else if (kural.standardMaxWidthCm) notlar.push('Maksimum EN ' + kural.standardMaxWidthCm + ' cm, BOY ' + kural.maxHeightCm + ' cm.');
+  $('nh-olcu-not').textContent = notlar.join(' ');
+
+  function secenekListesi(kapId, ad, liste, secili, ekYazi) {
+    var kap = $(kapId); if (!kap) return;
+    kap.innerHTML = liste.map(function (o) {
+      return '<label class="nh-opt"><input type="radio" name="' + ad + '" value="' + o.kod + '"' + (o.kod === secili ? ' checked' : '') + '>' +
+        '<span><b>' + o.ad + '</b><small>' + o.aciklama + '</small></span>' +
+        (ekYazi(o) ? '<span class="nh-ek">' + ekYazi(o) + '</span>' : '') + '</label>';
+    }).join('');
+    kap.addEventListener('change', function (e) { durum[ad] = e.target.value; hesapla(); });
+  }
+  if (SERILER) {
+    var seriKap = $('nh-seri');
+    seriKap.innerHTML = SERILER.map(function (o) {
+      return '<label class="nh-opt"><input type="radio" name="seri" value="' + o.kod + '"' + (o.kod === durum.seri ? ' checked' : '') + '>' +
+        '<span><b>' + o.ad + (o.etiket ? '<span class="nh-etiket">' + o.etiket + '</span>' : '') + '</b><small>' + o.aciklama + '</small></span>' +
+        '<span class="nh-ek">' + (o.liste > o.m2 ? '<s>' + tl(o.liste) + '</s>' : '') + tl(o.m2) + ' /m²</span></label>';
+    }).join('');
+    seriKap.addEventListener('change', function (e) { durum.seri = e.target.value; kuralGuncelle(); hesapla(); });
+  }
+  if (KOD === 'plise') {
+    $('nh-profil').innerHTML = EK.profilRenkleri.map(function (p) {
+      var hex = EK.profilHex && EK.profilHex[p];
+      return '<button type="button" class="nh-renk" data-profil="' + p + '" aria-pressed="' + (p === durum.profil) + '">' +
+        (hex ? '<span class="nh-nokta" style="background:' + hex + '"></span>' : '') + p + '</button>';
+    }).join('');
+    $('nh-profil').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-profil]'); if (!b) return;
+      durum.profil = b.dataset.profil;
+      $('nh-profil-ad').textContent = durum.profil;
+      this.querySelectorAll('[data-profil]').forEach(function (x) { x.setAttribute('aria-pressed', x === b); });
+      hesapla();
+    });
+    secenekListesi('nh-montaj', 'montaj', EK.montajlar, durum.montaj, function (o) { return o.ucret ? '+' + tl(o.ucret) : ''; });
+    secenekListesi('nh-ciftli', 'ciftli', EK.ciftli, durum.ciftli, function (o) { return o.ekM2 ? 'm² +' + tl(o.ekM2) : ''; });
+  }
+
+  // Renk seçimi ve galeri
+  kok.querySelectorAll('[data-renk]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      durum.renk = b.dataset.renk; $('nh-renk-ad').textContent = durum.renk;
+      kok.querySelectorAll('[data-renk]').forEach(function (x) { x.setAttribute('aria-pressed', x === b); });
+      var g = document.querySelector('media-gallery'), mid = b.dataset.media;
+      if (g && mid && g.setActiveMedia) {
+        var el = g.querySelector('[data-media-id$="-' + mid + '"]');
+        if (el) g.setActiveMedia(el.dataset.mediaId, false, false);
+      }
+      hesapla();
+    });
+  });
+
+  function sat(a, b) { return '<div class="nh-sat"><span>' + a + '</span><span>' + b + '</span></div>'; }
+
+  function hesapla() {
+    var en = $('nh-en').value.trim(), boy = $('nh-boy').value.trim();
+    var adet = parseInt($('nh-adet').value, 10) || 1; if (adet < 1) adet = 1;
+    durum.hesap = null; durum.tutar = 0; $('nh-ekle').disabled = true;
+    waGuncelle();
+    if (!en || !boy) {
+      $('nh-ozet').innerHTML = '<p class="nh-not" style="margin:0">' + (en || boy ? 'Fiyatı görmek için hem EN hem BOY ölçüsünü girin.' : 'Ölçülerinizi girin, fiyatınız anında hesaplansın.') + '</p>';
+      return;
+    }
+    var r = window.Pricing.tryCalculate({ rule: kural, widthCm: en, heightCm: boy, quantity: adet });
+    if (!r.ok) {
+      var m = r.message;
+      if (r.code === 'JUMBO_MAX_WIDTH_EXCEEDED' || r.code === 'MAX_WIDTH_EXCEEDED') m += ' WhatsApp’tan bize yazın, özel fiyat verelim.';
+      $('nh-ozet').innerHTML = '<p class="nh-hata">' + m + '</p>';
+      return;
+    }
+    var h = r.result;
+    var montajObj = KOD === 'plise' ? EK.montajlar.filter(function (x) { return x.kod === durum.montaj; })[0] : null;
+    var ciftliObj = KOD === 'plise' ? EK.ciftli.filter(function (x) { return x.kod === durum.ciftli; })[0] : null;
+    var montajUcret = montajObj ? montajObj.ucret : 0;
+    var ciftliUcret = ciftliObj && ciftliObj.ekM2 ? window.Pricing.money(ciftliObj.ekM2 * h.billableAreaM2 * adet) : 0;
+    var toplam = Math.ceil(window.Pricing.money(h.totalPrice + montajUcret + ciftliUcret));
+    var liste = h.hasDiscount ? Math.ceil(h.listTotalPrice + montajUcret + ciftliUcret) : 0;
+    durum.hesap = h; durum.tutar = toplam; durum.adet = adet; durum.montajObj = montajObj; durum.ciftliObj = ciftliObj;
+
+    $('nh-ozet').innerHTML =
+      (h.pricingMode === 'jumbo' ? '<div class="nh-jumbo"><b>Jumbo sistem uygulandı.</b> EN ölçünüz ' + kural.standardMaxWidthCm + ' cm üzerinde olduğu için daha dayanıklı Jumbo Boru + Lüks Seri mekanizma kullanılacak.</div>' : '') +
+      sat('Girilen ölçü', nf(h.enteredWidthCm) + ' × ' + nf(h.enteredHeightCm) + ' cm') +
+      sat('Fiyatlandırılan ölçü', nf(h.billableWidthCm) + ' × ' + nf(h.billableHeightCm) + ' cm') +
+      sat('Fiyatlandırılan alan', nf(h.billableAreaM2) + ' m²') +
+      sat('m² fiyatı', tl(h.pricePerM2 + (ciftliObj ? ciftliObj.ekM2 : 0))) +
+      (adet > 1 ? sat('Adet', adet) : '') +
+      (montajUcret ? sat('Montaj', '+' + tl(montajUcret)) : '') +
+      '<div class="nh-top"><span>Toplam</span><span>' + (liste > toplam ? '<span class="nh-eski">' + tl(liste) + '</span>' : '') + '<b>' + tl(toplam) + '</b></span></div>' +
+      (h.explanation && h.explanation.length ? '<p class="nh-not">' + h.explanation.join(' ') + '</p>' : '');
+    $('nh-ekle').disabled = !BIRIM;
+    waGuncelle();
+  }
+
+  function ozellikler() {
+    var h = durum.hesap, p = {
+      'Ürün': URUN,
+      'Renk': durum.renk,
+      'Ölçü (EN × BOY)': nf(h.enteredWidthCm) + ' × ' + nf(h.enteredHeightCm) + ' cm',
+      'Fiyatlandırılan ölçü': nf(h.billableWidthCm) + ' × ' + nf(h.billableHeightCm) + ' cm (' + nf(h.billableAreaM2) + ' m²)',
+      'Perde adedi': String(durum.adet)
+    };
+    if (h.pricingMode === 'jumbo') p['Sistem'] = h.systemName;
+    if (KOD === 'plise') {
+      var s = seriBul(durum.seri);
+      if (s) p['Kumaş serisi'] = s.ad + (s.etiket ? ' (' + s.etiket + ')' : '');
+      p['Profil rengi'] = durum.profil;
+      if (durum.montajObj) p['Montaj'] = durum.montajObj.ad;
+      if (durum.ciftliObj) p['Sistem tipi'] = durum.ciftliObj.ad;
+    }
+    p['Perde tutarı'] = tl(durum.tutar);
+    return p;
+  }
+
+  function waGuncelle() {
+    var t = 'Merhaba, ' + URUN + ' için bilgi almak istiyorum.';
+    if (durum.hesap) {
+      var p = ozellikler(); t = 'Merhaba, web sitenizden fiyat hesapladım.\n\n';
+      Object.keys(p).forEach(function (k) { t += k + ': ' + p[k] + '\n'; });
+      t += '\nSipariş vermek istiyorum.';
+    }
+    $('nh-wa').href = 'https://wa.me/' + EK.whatsapp + '?text=' + encodeURIComponent(t);
+  }
+
+  ['nh-en', 'nh-boy', 'nh-adet'].forEach(function (id) { $(id).addEventListener('input', hesapla); });
+
+  $('nh-ekle').addEventListener('click', function () {
+    if (!durum.hesap || !durum.tutar) return;
+    var btn = this; btn.disabled = true; btn.textContent = 'Ekleniyor…';
+    fetch('/cart/add.js', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ items: [{ id: Number(BIRIM), quantity: durum.tutar, properties: ozellikler() }] })
+    }).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw j; return j; }); })
+      .then(function () { window.location.href = '/cart'; })
+      .catch(function (e) {
+        btn.disabled = false; btn.textContent = 'Sepete Ekle';
+        $('nh-ozet').insertAdjacentHTML('beforeend', '<p class="nh-hata">Sepete eklenemedi' + (e && e.description ? ': ' + e.description : '') + '. WhatsApp’tan sipariş verebilirsiniz.</p>');
+      });
+  });
+
+  hesapla();
+})();
+</script>
+{%- endif -%}

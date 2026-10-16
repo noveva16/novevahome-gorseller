@@ -1,0 +1,96 @@
+{%- comment -%}
+  Noveva Home — Ürün sayfası Sık Sorulan Sorular (SSS).
+  Ürün kodu "nh-<kod>" etiketinden okunur (hesaplayıcı ile aynı kural).
+  Soru ve cevaplar aşağıdaki "capture" bloklarında. Biçim: Soru ||| Cevap ve her soru @@@ ile ayrılır.
+  Google için FAQPage yapılandırılmış verisi de otomatik üretilir.
+{%- endcomment -%}
+{%- assign nh_kod = '' -%}
+{%- for t in product.tags -%}
+  {%- if t == 'nh-plise' or t == 'nh-stor' or t == 'nh-zebra' or t == 'nh-ahsap_jaluzi' -%}
+    {%- assign nh_kod = t | remove_first: 'nh-' -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- capture sss_ozel -%}
+{%- case nh_kod -%}
+{%- when 'plise' -%}
+Hangi plise serisini seçmeliyim?|||Beş seri var: <b>Diamond Serisi</b> (749 TL/m²) ışığı yumuşak süzer; <b>Venüs Serisi</b> 900 TL/m²; <b>Dark Serisi</b> (1.300 TL/m²) ışığın yaklaşık %85'ini keser; <b>Blackout Plise</b> (1.590 TL/m²) ışığı tamamen keser, yatak odası için idealdir; <b>Honeycomb (Bal Peteği)</b> (1.800 TL/m²) tam karartmanın yanında hücreli yapısıyla daha yüksek ısı yalıtımı sağlar. Seriyi fiyat hesaplayıcının ilk adımında seçebilirsiniz.@@@
+Cam balkona hangi montajla takılır?|||Üç seçenek var: <b>Kancalı</b> (cam balkon profiline kanca ile, delme gerektirmez), <b>vidalı</b> (duvara, tavana veya PVC kasaya, en sağlam çözüm) ve <b>yapıştırmalı</b> (güçlü çift taraflı bantla, delmeden). Kancalı ve vidalı montaj ücretsizdir; yapıştırmalı montaj sipariş kalemi başına 200 TL'dir.@@@
+Çiftli (gece–gündüz) sistem nedir?|||Aynı perdede hem tül hem perde katmanı bulunur: gündüz tülü indirip ışık alırsınız, gece perde katmanıyla tam kapatırsınız. m² fiyatına 1.020 TL eklenir (tül 800 TL + sistem farkı 220 TL).@@@
+En küçük ve en büyük kaç cm yapılıyor?|||EN ve BOY en az 20 cm olabilir. En fazla 100 cm EN ve 250 cm BOY üretilir. 1 m²'den küçük perdeler 1 m² olarak fiyatlandırılır.@@@
+Cam balkonun her kanadı için ayrı perde mi gerekir?|||Evet. Her kanadı ayrı ölçüp ayrı perde olarak sepete ekleyin; kanat ölçüleri aynıysa adedi artırmanız yeterli.@@@
+{%- when 'zebra' or 'stor' -%}
+Fiyat hesaplanırken ölçüm neden yuvarlanıyor?|||EN ve BOY bir üst 10 cm'ye yuvarlanarak fiyatlandırılır (örneğin 143 cm → 150 cm). 100 cm'den dar perdeler 100 cm EN üzerinden fiyatlandırılır, çünkü boru ve mekanizma maliyeti dar perdede de aynıdır. Perde yine sizin girdiğiniz ölçüde üretilir.@@@
+Jumbo sistem nedir?|||230 cm'den geniş perdelerde kumaşın sarkmaması için daha kalın boru ve lüks seri mekanizma kullanılır; fiyat buna göre hesaplanır. En fazla 300 cm EN ve 300 cm BOY üretilir.@@@
+{%- if nh_kod == 'zebra' -%}
+Zebra perdede ışık nasıl ayarlanır?|||Zebra perde açık ve kapalı şeritlerin üst üste bindiği çift katlı bir kumaştır. Zinciri çekerek şeritleri kaydırırsınız; şeritler üst üste gelince ışık girer, kapalı şeritler hizalanınca görüş kapanır.@@@
+{%- endif -%}
+{%- when 'ahsap_jaluzi' -%}
+En büyük kaç cm yapılıyor?|||Ahşap jaluzi en fazla 230 cm EN ve 300 cm BOY üretilir. Fiyatlandırmada ölçüler bir üst 10 cm'ye yuvarlanır ve 100 cm'den dar perdeler 100 cm EN üzerinden hesaplanır.@@@
+Banyo ve mutfakta kullanılır mı?|||Ahşap doğal bir malzeme olduğu için banyo gibi sürekli nemli alanlarda önermiyoruz. Bu alanlar için stor veya plise perde daha uygundur.@@@
+{%- endcase -%}
+{%- endcapture -%}
+
+{%- capture sss_ortak -%}
+Fiyata neler dahil?|||Perde, mekanizma ve montaj aparatları fiyata dahildir. Türkiye geneli kargo <b>ücretsizdir</b>.@@@
+Kaç günde teslim edilir?|||Perdeniz ölçüye özel üretildiği için üretim <b>2–4 iş günü</b> sürer. Ardından kargo ile genellikle <b>1–3 iş gününde</b> teslim edilir.@@@
+{%- if nh_kod == 'plise' -%}
+Ölçüyü nasıl almalıyım?|||Plise perde cama oturacak şekilde üretilir, bu yüzden <b>camın ölçüsünü</b> alın; kasanın ya da profilin dış ölçüsünü değil.<br> <b>EN:</b> Camı çevreleyen lastik fitilin iç kenarından diğer iç kenarına kadar ölçün.<br> <b>BOY:</b> Üst fitilin iç kenarından alt fitilin iç kenarına kadar ölçün.<br> Kanatlar tam düz olmayabilir; üç noktadan ölçüp <b>en küçük değeri</b> yazın.<br> <b>Cam balkonda:</b> Her kanadı ayrı ölçün ve kanatları soldan sağa numaralandırın.<br> <b>İlk kanat:</b> Açılan ilk kanadın EN ölçüsünü <b>2 cm eksik</b> yazın (örneğin 75 cm ölçtüyseniz 73 cm); böylece perde profile sıkışmaz.<br> <b>Köşe camları:</b> Köşede birleşen iki cam varsa <b>yalnızca birinin</b> EN ölçüsünü 2 cm eksik yazın; böylece perdeler köşede birbirine çarpmaz.<br> Diğer kanatlarda ölçtüğünüz değeri olduğu gibi yazın; perde girdiğiniz ölçüde birebir üretilir. Ayrıntılı anlatım: <a href="/blogs/news/cam-balkon-perde-olcusu-nasil-alinir">Cam Balkon Perdesi Ölçüsü Nasıl Alınır?</a>@@@
+{%- else -%}
+Ölçüyü nasıl almalıyım?|||Ölçüleri santimetre olarak <b>EN × BOY</b> şeklinde girin. Kasa içine montajda kasa içi ölçüyü, kasa dışına montajda her iki yandan 5–10 cm pay ekleyerek ölçün. Adım adım anlatım için <a href="/pages/olcu-nasil-alinir">Ölçü Nasıl Alınır?</a> sayfamıza bakın.@@@
+{%- endif -%}
+
+Ölçüyü yanlış girersem ne olur?|||Siparişiniz üretime alınmadan önce ölçünüzü değiştirebilirsiniz; hemen WhatsApp'tan bize yazın. Emin olamadığınız ölçüleri sipariş öncesi bize gönderin, birlikte kontrol edelim.@@@
+İade edebilir miyim?|||Perdeler sizin ölçünüze özel üretildiği için cayma hakkı kapsamı dışındadır. Ürün hasarlı veya üretim hatalı ulaşırsa teslimattan itibaren 14 gün içinde bildirin; <b>ücretsiz olarak yeniden üretip gönderiyoruz</b>. Ayrıntılar: <a href="/policies/refund-policy">İade Politikası</a>.@@@
+Montajı kendim yapabilir miyim?|||Evet. Montaj aparatları perdeyle birlikte gönderilir ve birkaç vida ya da kancayla kolayca takılır. Takıldığınız yerde WhatsApp'tan destek veriyoruz.@@@
+Ödemeyi nasıl yapabilirim?|||Kredi kartı veya banka kartı ile güvenli ödeme altyapısı üzerinden ödeyebilirsiniz.
+{%- endcapture -%}
+
+{%- assign sss_tum = sss_ozel | append: sss_ortak | split: '@@@' -%}
+
+<style>
+  .nh-sss{margin:18px 0 6px}
+  .nh-sss h3{font-size:1.6rem;margin:0 0 8px}
+  .nh-sss details{border-bottom:1px solid rgba(0,0,0,.1)}
+  .nh-sss summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 2px;font-weight:600;font-size:1.4rem}
+  .nh-sss summary::-webkit-details-marker{display:none}
+  .nh-sss summary::after{content:'+';font-size:2rem;font-weight:400;line-height:1;opacity:.6;flex-shrink:0}
+  .nh-sss details[open] summary::after{content:'−'}
+  .nh-sss .nh-sss-c{padding:0 2px 14px;font-size:1.35rem;line-height:1.6;opacity:.85}
+  .nh-sss .nh-sss-c a{text-decoration:underline}
+  .nh-sss-alt{font-size:1.3rem;margin:12px 0 0;opacity:.85}
+</style>
+
+<div class="nh-sss">
+  <h3>Sık Sorulan Sorular</h3>
+  {%- for item in sss_tum -%}
+    {%- assign parca = item | split: '|||' -%}
+    {%- assign soru = parca[0] | strip -%}
+    {%- if soru != '' and parca.size > 1 -%}
+      <details>
+        <summary>{{ soru }}</summary>
+        <div class="nh-sss-c">{{ parca[1] | strip }}</div>
+      </details>
+    {%- endif -%}
+  {%- endfor -%}
+  <p class="nh-sss-alt">Sorunuzun cevabı burada yok mu? <a href="https://wa.me/905443028616?text={{ 'Merhaba, ' | append: product.title | append: ' hakkında bir sorum var.' | url_encode }}" target="_blank" rel="noopener">WhatsApp'tan sorun</a>, hemen yanıtlayalım.</p>
+</div>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {%- assign ilk = true -%}
+    {%- for item in sss_tum -%}
+      {%- assign parca = item | split: '|||' -%}
+      {%- assign soru = parca[0] | strip -%}
+      {%- if soru != '' and parca.size > 1 -%}
+        {%- unless ilk -%},{%- endunless -%}
+        {"@type":"Question","name":{{ soru | json }},"acceptedAnswer":{"@type":"Answer","text":{{ parca[1] | strip_html | strip | json }}}}
+        {%- assign ilk = false -%}
+      {%- endif -%}
+    {%- endfor -%}
+  ]
+}
+</script>
