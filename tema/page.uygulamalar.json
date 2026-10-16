@@ -1,0 +1,1 @@
+{"sections": {"main": {"type": "custom-liquid", "settings": {"custom_liquid": "{% render 'nh-uygulamalar' %}", "color_scheme": "background-2", "padding_top": 40, "padding_bottom": 56}}}, "order": ["main"]}
