@@ -1,0 +1,524 @@
+{%- comment -%}
+  Noveva Home — Ölçüye özel perde fiyat hesaplayıcı.
+  Ürünün etiketi "nh-plise", "nh-stor", "nh-zebra" veya "nh-ahsap_jaluzi" olmalı.
+  Fiyat, assets/nh-fiyat.js içindeki kurallarla hesaplanır. Sepete "Ölçüye Özel Perde Siparişi"
+  (1 TL birim) ürünü eklenir: her ölçü satırı (kanat/perde) ayrı bir sepet satırıdır,
+  adedi hesaplanan tutar kadardır ve perde bilgileri satır özelliği olarak yazılır.
+{%- endcomment -%}
+{%- liquid
+  assign nh_kod = ''
+  for t in product.tags
+    if t == 'nh-plise' or t == 'nh-stor' or t == 'nh-zebra' or t == 'nh-ahsap_jaluzi'
+      assign nh_kod = t | remove_first: 'nh-'
+    endif
+  endfor
+  assign nh_birim = all_products['olcuye-ozel-perde-siparisi']
+  assign nh_secili = product.selected_or_first_available_variant
+  if nh_kod == 'plise'
+    assign nh_satir_ad = 'kanat'
+  else
+    assign nh_satir_ad = 'perde'
+  endif
+-%}
+{%- if nh_kod != '' -%}
+<script src="{{ 'nh-fiyat.js' | asset_url }}"></script>
+<style>
+  .nh-hes{border:1px solid rgba(0,0,0,.1);border-radius:14px;padding:18px;margin:6px 0 10px;background:rgba(var(--color-background,255,255,255),1)}
+  .nh-sec{margin:0 0 16px}
+  .nh-lbl{display:block;font-weight:600;font-size:1.4rem;margin:0 0 8px}
+  .nh-lbl small{font-weight:400;opacity:.7;margin-left:6px}
+  .nh-lbl-flex{display:flex;align-items:baseline;gap:8px}
+  .nh-lbl .nh-link{margin-left:auto;font-weight:600;font-size:1.25rem;background:none;border:0;padding:0;color:inherit;text-decoration:underline;cursor:pointer}
+  .nh-renkler{display:flex;flex-wrap:wrap;gap:8px}
+  .nh-renkler[hidden]{display:none}
+  .nh-renk{border:1px solid rgba(0,0,0,.18);border-radius:999px;padding:7px 14px;font-size:1.35rem;background:transparent;cursor:pointer;color:inherit}
+  .nh-renk[aria-pressed="true"]{border-color:currentColor;box-shadow:0 0 0 1px currentColor;font-weight:600}
+  .nh-nokta{display:inline-block;width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,.25);margin-right:6px;vertical-align:-2px}
+  .nh-sec-list{display:grid;gap:8px}
+  .nh-opt{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:flex-start;border:1px solid rgba(0,0,0,.14);border-radius:10px;padding:10px 12px;cursor:pointer}
+  .nh-opt input{margin-top:3px}
+  .nh-opt>span:first-of-type{flex:1;min-width:0}
+  .nh-opt b{display:block;font-size:1.35rem}
+  .nh-opt small{display:block;font-size:1.2rem;opacity:.75}
+  .nh-opt .nh-ek{margin-left:auto;font-weight:700;white-space:nowrap;font-size:1.3rem}
+  .nh-opt .nh-ek s{opacity:.5;font-weight:400;margin-right:4px}
+  .nh-etiket{display:inline-block;white-space:nowrap;background:#111;color:#fff;border-radius:999px;padding:1px 8px;font-size:1.1rem;font-weight:600;margin-left:6px;vertical-align:middle}
+  .nh-bas,.nh-satir{display:grid;grid-template-columns:24px 1fr 1fr 62px 30px;gap:8px;align-items:center}
+  .nh-bas{font-size:1.2rem;opacity:.7;margin-bottom:4px}
+  .nh-satir{margin-bottom:8px}
+  .nh-satir .nh-no{font-weight:700;font-size:1.3rem;text-align:center}
+  .nh-satir input{width:100%;height:44px;border:1px solid rgba(0,0,0,.2);border-radius:10px;padding:0 10px;font-size:1.6rem;background:transparent;color:inherit;min-width:0}
+  .nh-satir input[aria-invalid="true"]{border-color:#b42318}
+  .nh-sil{width:30px;height:30px;border:0;background:rgba(0,0,0,.06);border-radius:50%;cursor:pointer;font-size:1.6rem;line-height:1;color:inherit}
+  .nh-sil[hidden]{visibility:hidden;display:block}
+  .nh-satir-ekle{width:100%;border:1px dashed rgba(0,0,0,.35);background:transparent;border-radius:10px;padding:10px;font-size:1.35rem;font-weight:600;cursor:pointer;color:inherit;margin-top:2px}
+  .nh-ozet{background:rgba(0,0,0,.035);border-radius:12px;padding:14px;margin:14px 0}
+  .nh-secim{font-size:1.3rem;line-height:1.5;margin:0 0 8px;padding-bottom:8px;border-bottom:1px solid rgba(0,0,0,.1)}
+  .nh-sat{display:flex;justify-content:space-between;gap:10px;font-size:1.35rem;padding:3px 0}
+  .nh-sat span:first-child{opacity:.75}
+  .nh-sat span:last-child{white-space:nowrap;text-align:right}
+  .nh-sat.nh-hatali span:last-child{white-space:normal}
+  .nh-sat.nh-hatali span{color:#b42318;opacity:1}
+  .nh-top{display:flex;flex-wrap:wrap;gap:4px 10px;justify-content:space-between;align-items:baseline;border-top:1px solid rgba(0,0,0,.12);margin-top:8px;padding-top:10px;font-size:1.6rem;font-weight:700}
+  .nh-top b{font-size:2.2rem;white-space:nowrap}
+  .nh-top .nh-eski{white-space:nowrap}
+  .nh-eski{text-decoration:line-through;opacity:.55;font-weight:400;font-size:1.4rem;margin-right:8px}
+  .nh-not{font-size:1.25rem;opacity:.8;margin:6px 0 0}
+  .nh-hata{color:#b42318;font-size:1.35rem;margin:0}
+  .nh-uyari{background:#eef6ff;border:1px solid #b6d4f5;border-radius:10px;padding:10px 12px;font-size:1.3rem;line-height:1.5;margin:10px 0 0}
+  .nh-uyari a{text-decoration:underline;white-space:nowrap}
+  .nh-jumbo{background:#fff6e5;border:1px solid #f5c26b;border-radius:10px;padding:10px 12px;font-size:1.3rem;margin:0 0 10px}
+  .nh-onay{display:flex;gap:10px;align-items:flex-start;font-size:1.3rem;line-height:1.5;border:1px solid rgba(0,0,0,.14);border-radius:10px;padding:10px 12px;margin:0 0 10px;cursor:pointer}
+  .nh-onay input{margin-top:4px;width:18px;height:18px;flex-shrink:0}
+  .nh-onay.nh-uyar{border-color:#b42318;background:#fff3f2}
+  .nh-btn{width:100%;margin-top:2px}
+  .nh-btn[disabled]{opacity:.5;cursor:not-allowed}
+  .nh-teslim{display:flex;gap:8px;align-items:center;justify-content:center;font-size:1.3rem;margin:10px 0 0}
+  .nh-teslim b{font-weight:700}
+  .nh-wa{display:flex;justify-content:center;align-items:center;gap:8px;width:100%;margin-top:10px;border:1px solid #25D366;color:#128C4B;border-radius:999px;padding:11px;font-weight:600;font-size:1.4rem;text-decoration:none}
+  .nh-guven{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:12px;font-size:1.25rem;opacity:.85}
+  .nh-m2{font-size:1.4rem;margin:-4px 0 12px}
+  .nh-m2 b{font-size:1.9rem}
+  .nh-kars{border:0;border-radius:14px;padding:0;max-width:760px;width:calc(100% - 24px)}
+  .nh-kars::backdrop{background:rgba(0,0,0,.45)}
+  .nh-kars-ic{padding:18px}
+  .nh-kars h3{margin:0 0 12px;font-size:1.8rem}
+  .nh-kars-kap{position:absolute;top:10px;right:12px;border:0;background:none;font-size:2.4rem;cursor:pointer;line-height:1}
+  .nh-kars-tablo{overflow-x:auto}
+  .nh-kars table{width:100%;border-collapse:collapse;font-size:1.3rem}
+  .nh-kars th,.nh-kars td{text-align:left;padding:9px 8px;border-bottom:1px solid rgba(0,0,0,.08);vertical-align:top}
+  .nh-kars th{font-size:1.2rem;opacity:.7;font-weight:600}
+  .nh-kars td s{opacity:.5;display:block;font-size:1.15rem;white-space:nowrap}
+  .nh-kars td b.nh-fy{white-space:nowrap}
+  .nh-kars tbody tr{cursor:pointer}
+  .nh-kars tbody tr:hover{background:rgba(0,0,0,.03)}
+  .nh-kars .nh-sec-btn{border:1px solid currentColor;background:none;border-radius:999px;padding:5px 12px;cursor:pointer;font-size:1.2rem;color:inherit;white-space:nowrap}
+  .nh-bar{position:fixed;left:0;right:0;bottom:0;z-index:70;display:flex;align-items:center;gap:12px;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:#fff;color:#111;box-shadow:0 -4px 18px rgba(0,0,0,.12)}
+  .nh-bar[hidden]{display:none}
+  .nh-bar div{flex:1;line-height:1.2}
+  .nh-bar small{display:block;font-size:1.15rem;opacity:.7}
+  .nh-bar b{font-size:1.9rem}
+  .nh-bar .button{min-width:0;padding:0 18px;margin:0}
+  body.nh-bar-acik .nh-sabit{bottom:86px}
+  @media (min-width:750px){.nh-bar{display:none!important}body.nh-bar-acik .nh-sabit{bottom:18px}}
+  @media (max-width:520px){.nh-opt .nh-ek{width:100%;margin-left:0;padding-left:23px}.nh-kars .nh-gizle-m{display:none}.nh-top b{font-size:2rem}.nh-top>span:last-child{text-align:right}.nh-top .nh-eski{display:block;font-size:1.25rem;margin:0}.nh-kars table{table-layout:fixed;font-size:1.2rem}.nh-kars th{font-size:1.05rem}.nh-kars td{overflow-wrap:break-word}.nh-kars th:nth-child(3),.nh-kars td:nth-child(3){width:17%}.nh-kars th:nth-child(4),.nh-kars td:nth-child(4){width:24%}.nh-kars th:nth-child(2),.nh-kars td:nth-child(2){width:21%}.nh-kars th:nth-child(1){width:38%}.nh-kars-ic{padding:16px 12px}.nh-kars th,.nh-kars td{padding:8px 5px}}
+  @media (max-width:420px){.nh-bas,.nh-satir{grid-template-columns:20px 1fr 1fr 54px 28px;gap:6px}.nh-satir input{padding:0 8px;font-size:1.5rem}}
+</style>
+
+<div class="nh-hes" id="nh-hes" data-kod="{{ nh_kod }}" data-birim="{{ nh_birim.selected_or_first_available_variant.id }}">
+  <div class="nh-m2" id="nh-m2"></div>
+
+  {%- if nh_kod == 'plise' -%}
+  <div class="nh-sec">
+    <span class="nh-lbl nh-lbl-flex">1. Kumaş Serisi <button type="button" class="nh-link" id="nh-kars-ac">Serileri karşılaştır</button></span>
+    <div class="nh-sec-list" id="nh-seri"></div>
+  </div>
+  <dialog class="nh-kars" id="nh-kars" aria-labelledby="nh-kars-baslik">
+    <div class="nh-kars-ic">
+      <button type="button" class="nh-kars-kap" id="nh-kars-kapat" aria-label="Kapat">×</button>
+      <h3 id="nh-kars-baslik">Plise serilerini karşılaştırın</h3>
+      <p class="nh-not" style="margin:-6px 0 8px">Seçmek için seriye dokunun.</p>
+      <div class="nh-kars-tablo" id="nh-kars-tablo"></div>
+    </div>
+  </dialog>
+  {%- endif -%}
+
+  <div class="nh-sec">
+    <span class="nh-lbl">{% if nh_kod == 'plise' %}2{% else %}1{% endif %}. Renk <small id="nh-renk-ad">{{ nh_secili.option1 }}</small></span>
+    <div class="nh-renkler" id="nh-renk-varyant" role="group" aria-label="Renk seçimi">
+      {%- for v in product.variants -%}
+        <button type="button" class="nh-renk" data-renk="{{ v.option1 | escape }}" data-media="{{ v.featured_media.id }}" aria-pressed="{% if v.id == nh_secili.id %}true{% else %}false{% endif %}">{{ v.option1 }}</button>
+      {%- endfor -%}
+    </div>
+    <div class="nh-renkler" id="nh-renk-seri" role="group" aria-label="Kumaş rengi" hidden></div>
+  </div>
+
+  <div class="nh-sec">
+    <span class="nh-lbl">{% if nh_kod == 'plise' %}3{% else %}2{% endif %}. Ölçüleriniz (cm) <small><a href="/pages/olcu-nasil-alinir" target="_blank">Ölçü nasıl alınır?</a></small></span>
+    <div class="nh-bas" aria-hidden="true"><span></span><span>EN (cm)</span><span>BOY (cm)</span><span>Adet</span><span></span></div>
+    <div id="nh-satirlar"></div>
+    <button type="button" class="nh-satir-ekle" id="nh-satir-ekle">+ {% if nh_kod == 'plise' %}Kanat ekle{% else %}Başka perde ekle{% endif %}</button>
+    {%- if nh_kod == 'plise' -%}
+    <div class="nh-uyari" role="note">
+      <b>Cam balkon hatırlatması:</b> Her kanadı ayrı satıra yazın. Açılan <b>ilk kanadın</b> EN ölçüsünü <b>2 cm eksik</b> yazın (ör. 75 cm ölçtüyseniz 73 cm). Köşede birleşen iki cam varsa <b>yalnızca birini</b> 2 cm eksik yazın. Ölçüsü aynı olan kanatlar için adedi artırabilirsiniz.
+      <a href="/blogs/news/cam-balkon-perde-olcusu-nasil-alinir" target="_blank">Detaylı anlatım</a>
+    </div>
+    {%- endif -%}
+    <p class="nh-not" id="nh-olcu-not"></p>
+  </div>
+
+  {%- if nh_kod == 'plise' -%}
+  <div class="nh-sec">
+    <span class="nh-lbl">4. Profil Rengi <small id="nh-profil-ad">Beyaz</small></span>
+    <div class="nh-renkler" id="nh-profil" role="group" aria-label="Profil rengi"></div>
+  </div>
+  <div class="nh-sec">
+    <span class="nh-lbl">5. Montaj Tipi</span>
+    <div class="nh-sec-list" id="nh-montaj"></div>
+  </div>
+  <div class="nh-sec">
+    <span class="nh-lbl">6. Sistem</span>
+    <div class="nh-sec-list" id="nh-ciftli"></div>
+  </div>
+  {%- endif -%}
+
+  <div class="nh-ozet" id="nh-ozet" aria-live="polite"></div>
+
+  <label class="nh-onay" id="nh-onay-kutu">
+    <input type="checkbox" id="nh-onay">
+    <span>{% if nh_kod == 'plise' %}Ölçülerimi kontrol ettim. Açılan ilk kanadı ve köşedeki iki camdan birini <b>2 cm eksik</b> yazdım. Perdelerin yazdığım ölçülerde üretileceğini biliyorum.{% else %}Ölçülerimi kontrol ettim. Perdelerin yazdığım ölçülerde, bana özel üretileceğini biliyorum.{% endif %}</span>
+  </label>
+
+  <button type="button" class="button nh-btn" id="nh-ekle" disabled>Sepete Ekle</button>
+  <p class="nh-teslim" id="nh-teslim"></p>
+  <a class="nh-wa" id="nh-wa" href="https://wa.me/905443028616" target="_blank" rel="noopener">WhatsApp ile sor / sipariş ver</a>
+  <div class="nh-guven">
+    <span>✓ Ölçüye özel üretim</span><span>✓ Türkiye geneli ücretsiz kargo</span>
+    <span>✓ 2–4 iş günü üretim</span><span>✓ İnegöl'de yerinde ölçü</span>
+  </div>
+</div>
+
+<div class="nh-bar" id="nh-bar" hidden>
+  <div><small>Toplam</small><b id="nh-bar-tutar"></b></div>
+  <button type="button" class="button" id="nh-bar-btn">Sepete Ekle</button>
+</div>
+
+<script>
+(function () {
+  var kok = document.getElementById('nh-hes'); if (!kok || !window.Pricing) return;
+  var KOD = kok.dataset.kod, BIRIM = kok.dataset.birim, EK = window.NH_EK;
+  var temelKural = window.PricingRules.get(KOD), kural = temelKural;
+  var SERILER = (KOD === 'plise' && EK.seriler) ? EK.seriler : null;
+  var URUN = {{ product.title | json }};
+  var VARYANT_SAYISI = {{ product.variants.size | default: 0 }};
+  var SATIR_AD = KOD === 'plise' ? 'kanat' : 'perde';
+  var SATIR_AD_B = KOD === 'plise' ? 'Kanat' : 'Perde';
+  var MAKS_SATIR = 20;
+  var $ = function (id) { return document.getElementById(id); };
+  var tl = function (n) { return window.Pricing.formatTRY(n); };
+  var tl0 = function (n) { return Number(n).toLocaleString('tr-TR', { maximumFractionDigits: 0 }) + ' ₺'; };
+  var nf = function (n) { return Number(n).toLocaleString('tr-TR', { maximumFractionDigits: 2 }); };
+  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var durum = { renk: {{ nh_secili.option1 | json }}, seri: 'standart', profil: 'Beyaz', montaj: 'kancali', ciftli: 'tekli', toplam: 0, satirSonuc: [] };
+  var satirlar = [{ en: '', boy: '', adet: 1 }];
+
+  /* ---------- Kumaş serisi ---------- */
+  function seriBul(kod) { return SERILER ? SERILER.filter(function (s) { return s.kod === kod; })[0] : null; }
+  if (SERILER) {
+    var urlSeri = (location.search.match(/[?&]seri=([a-z]+)/) || [])[1];
+    if (urlSeri === 'diamond') urlSeri = 'standart';
+    if (urlSeri && seriBul(urlSeri)) durum.seri = urlSeri;
+  }
+  function kuralGuncelle() {
+    var s = seriBul(durum.seri);
+    kural = s ? Object.assign({}, temelKural, { standardPricePerM2: s.m2, listPricePerM2: s.liste }) : temelKural;
+    $('nh-m2').innerHTML = (kural.listPricePerM2 ? '<span class="nh-eski">' + tl(kural.listPricePerM2) + '</span>' : '') +
+      '<b>' + tl(kural.standardPricePerM2) + '</b> / m²' + (s ? ' <small style="opacity:.75">· ' + esc(s.ad) + (s.etiket ? ' (' + esc(s.etiket) + ')' : '') + '</small>' : '');
+  }
+
+  /* ---------- Renk ---------- */
+  var varyantRenk = durum.renk;
+  function renkGuncelle() {
+    var s = seriBul(durum.seri), vk = $('nh-renk-varyant'), sk = $('nh-renk-seri');
+    if (!sk || !vk) return;
+    if (s && s.renkler && s.renkler.length) {
+      if (s.renkler.indexOf(durum.renk) < 0) durum.renk = s.renkler[0];
+      sk.innerHTML = s.renkler.map(function (r) {
+        var hex = EK.kumasHex && EK.kumasHex[r];
+        return '<button type="button" class="nh-renk" data-seri-renk="' + esc(r) + '" aria-pressed="' + (r === durum.renk) + '">' +
+          (hex ? '<span class="nh-nokta" style="background:' + hex + '"></span>' : '') + esc(r) + '</button>';
+      }).join('');
+      vk.hidden = true; sk.hidden = false;
+    } else {
+      durum.renk = varyantRenk; vk.hidden = false; sk.hidden = true;
+    }
+    $('nh-renk-ad').textContent = durum.renk;
+  }
+  kuralGuncelle();
+  renkGuncelle();
+  if ($('nh-renk-seri')) $('nh-renk-seri').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-seri-renk]'); if (!b) return;
+    durum.renk = b.dataset.seriRenk; $('nh-renk-ad').textContent = durum.renk;
+    this.querySelectorAll('[data-seri-renk]').forEach(function (x) { x.setAttribute('aria-pressed', x === b); });
+    hesapla();
+  });
+  kok.querySelectorAll('[data-renk]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      durum.renk = varyantRenk = b.dataset.renk; $('nh-renk-ad').textContent = durum.renk;
+      kok.querySelectorAll('[data-renk]').forEach(function (x) { x.setAttribute('aria-pressed', x === b); });
+      var g = document.querySelector('media-gallery'), mid = b.dataset.media;
+      if (g && mid && g.setActiveMedia) {
+        var el = g.querySelector('[data-media-id$="-' + mid + '"]');
+        if (el) g.setActiveMedia(el.dataset.mediaId, false, false);
+      }
+      hesapla();
+    });
+  });
+
+  /* ---------- Ölçü notları ---------- */
+  var notlar = [];
+  if (temelKural.minBillableAreaM2) notlar.push('Her ' + SATIR_AD + ' en az ' + temelKural.minBillableAreaM2 + ' m² fiyatlandırılır.');
+  if (temelKural.widthRoundingStepCm) notlar.push('EN ve BOY üstteki ' + temelKural.widthRoundingStepCm + ' cm’ye yuvarlanır; minimum EN ' + temelKural.minBillableWidthCm + ' cm.');
+  if (temelKural.jumboEnabled) notlar.push(temelKural.standardMaxWidthCm + ' cm üzeri EN için Jumbo sistem uygulanır (en fazla ' + temelKural.jumboMaxWidthCm + ' cm).');
+  else if (temelKural.standardMaxWidthCm) notlar.push('Maksimum EN ' + temelKural.standardMaxWidthCm + ' cm, BOY ' + temelKural.maxHeightCm + ' cm.');
+  $('nh-olcu-not').textContent = notlar.join(' ');
+
+  /* ---------- Ölçü satırları (çoklu kanat / perde) ---------- */
+  var ornekEn = KOD === 'plise' ? 'ör. 73' : 'ör. 120';
+  function satirlariCiz(odakla) {
+    $('nh-satirlar').innerHTML = satirlar.map(function (s, i) {
+      return '<div class="nh-satir" data-i="' + i + '">' +
+        '<span class="nh-no" title="' + (i + 1) + '. ' + SATIR_AD + '">' + (i + 1) + '.</span>' +
+        '<input data-alan="en" inputmode="decimal" autocomplete="off" aria-label="' + (i + 1) + '. ' + SATIR_AD + ' EN (cm)" placeholder="' + ornekEn + '" value="' + esc(s.en) + '">' +
+        '<input data-alan="boy" inputmode="decimal" autocomplete="off" aria-label="' + (i + 1) + '. ' + SATIR_AD + ' BOY (cm)" placeholder="ör. 220" value="' + esc(s.boy) + '">' +
+        '<input data-alan="adet" type="number" min="1" max="50" inputmode="numeric" aria-label="' + (i + 1) + '. ' + SATIR_AD + ' adet" value="' + esc(s.adet) + '">' +
+        '<button type="button" class="nh-sil" data-sil="' + i + '" aria-label="' + (i + 1) + '. ' + SATIR_AD + ' satırını sil"' + (satirlar.length < 2 ? ' hidden' : '') + '>×</button>' +
+        '</div>';
+    }).join('');
+    $('nh-satir-ekle').hidden = satirlar.length >= MAKS_SATIR;
+    if (odakla) { var inp = $('nh-satirlar').querySelector('[data-i="' + (satirlar.length - 1) + '"] [data-alan="en"]'); if (inp) inp.focus(); }
+  }
+  $('nh-satirlar').addEventListener('input', function (e) {
+    var row = e.target.closest('[data-i]'); if (!row || !e.target.dataset.alan) return;
+    satirlar[+row.dataset.i][e.target.dataset.alan] = e.target.value;
+    hesapla();
+  });
+  $('nh-satirlar').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-sil]'); if (!b) return;
+    satirlar.splice(+b.dataset.sil, 1); satirlariCiz(); hesapla();
+  });
+  $('nh-satir-ekle').addEventListener('click', function () {
+    if (satirlar.length >= MAKS_SATIR) return;
+    var son = satirlar[satirlar.length - 1];
+    satirlar.push({ en: '', boy: son ? son.boy : '', adet: 1 });
+    satirlariCiz(true); hesapla();
+  });
+
+  /* ---------- Plise seçenekleri ---------- */
+  function secenekListesi(kapId, ad, liste, secili, ekYazi) {
+    var kap = $(kapId); if (!kap) return;
+    kap.innerHTML = liste.map(function (o) {
+      return '<label class="nh-opt"><input type="radio" name="' + ad + '" value="' + o.kod + '"' + (o.kod === secili ? ' checked' : '') + '>' +
+        '<span><b>' + o.ad + '</b><small>' + o.aciklama + '</small></span>' +
+        (ekYazi(o) ? '<span class="nh-ek">' + ekYazi(o) + '</span>' : '') + '</label>';
+    }).join('');
+    kap.addEventListener('change', function (e) { durum[ad] = e.target.value; hesapla(); });
+  }
+  function seriListesiCiz() {
+    var seriKap = $('nh-seri'); if (!seriKap) return;
+    seriKap.innerHTML = SERILER.map(function (o) {
+      return '<label class="nh-opt"><input type="radio" name="seri" value="' + o.kod + '"' + (o.kod === durum.seri ? ' checked' : '') + '>' +
+        '<span><b>' + esc(o.ad) + (o.etiket ? '<span class="nh-etiket">' + esc(o.etiket) + '</span>' : '') + '</b><small>' + esc(o.aciklama) + '</small></span>' +
+        '<span class="nh-ek">' + (o.liste > o.m2 ? '<s>' + tl0(o.liste) + '</s>' : '') + tl0(o.m2) + ' /m²</span></label>';
+    }).join('');
+  }
+  function seriSec(kod) {
+    durum.seri = kod; kuralGuncelle(); renkGuncelle(); hesapla();
+    var r = $('nh-seri') && $('nh-seri').querySelector('input[value="' + kod + '"]'); if (r) r.checked = true;
+  }
+  if (SERILER) {
+    seriListesiCiz();
+    $('nh-seri').addEventListener('change', function (e) { if (e.target.name === 'seri') seriSec(e.target.value); });
+    /* Karşılaştırma tablosu */
+    var kars = $('nh-kars');
+    $('nh-kars-tablo').innerHTML = '<table><thead><tr><th>Seri</th><th>Karartma</th><th>Renk</th><th>m² fiyatı</th><th class="nh-gizle-m">Öne çıkan</th><th class="nh-gizle-m"></th></tr></thead><tbody>' +
+      SERILER.map(function (o) {
+        var renkSayi = o.renkler ? o.renkler.length : VARYANT_SAYISI;
+        return '<tr data-kars-sec="' + o.kod + '"><td><b>' + esc(o.ad) + '</b></td><td>' + esc(String(o.karartma || o.etiket || '—').replace(' karartma', '')) + '</td><td>' + (renkSayi ? renkSayi + ' renk' : '—') + '</td>' +
+          '<td>' + (o.liste > o.m2 ? '<s>' + tl0(o.liste) + '</s>' : '') + '<b class="nh-fy">' + tl0(o.m2) + '</b></td><td class="nh-gizle-m">' + esc(o.aciklama) + '</td>' +
+          '<td class="nh-gizle-m"><button type="button" class="nh-sec-btn" data-kars-sec="' + o.kod + '">Seç</button></td></tr>';
+      }).join('') + '</tbody></table>';
+    $('nh-kars-ac').addEventListener('click', function () { if (kars.showModal) kars.showModal(); else kars.setAttribute('open', ''); });
+    $('nh-kars-kapat').addEventListener('click', function () { if (kars.close) kars.close(); else kars.removeAttribute('open'); });
+    kars.addEventListener('click', function (e) {
+      if (e.target === kars) { kars.close(); return; }
+      var b = e.target.closest('[data-kars-sec]'); if (!b) return;
+      seriSec(b.dataset.karsSec); if (kars.close) kars.close(); else kars.removeAttribute('open');
+    });
+  }
+  if (KOD === 'plise') {
+    $('nh-profil').innerHTML = EK.profilRenkleri.map(function (p) {
+      var hex = EK.profilHex && EK.profilHex[p];
+      return '<button type="button" class="nh-renk" data-profil="' + p + '" aria-pressed="' + (p === durum.profil) + '">' +
+        (hex ? '<span class="nh-nokta" style="background:' + hex + '"></span>' : '') + p + '</button>';
+    }).join('');
+    $('nh-profil').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-profil]'); if (!b) return;
+      durum.profil = b.dataset.profil;
+      $('nh-profil-ad').textContent = durum.profil;
+      this.querySelectorAll('[data-profil]').forEach(function (x) { x.setAttribute('aria-pressed', x === b); });
+      hesapla();
+    });
+    secenekListesi('nh-montaj', 'montaj', EK.montajlar, durum.montaj, function (o) { return o.ucret ? '+' + tl(o.ucret) + ' / ' + SATIR_AD : ''; });
+    secenekListesi('nh-ciftli', 'ciftli', EK.ciftli, durum.ciftli, function (o) { return o.ekM2 ? 'm² +' + tl(o.ekM2) : ''; });
+  }
+
+  /* ---------- Tahmini teslim ---------- */
+  function isGunuEkle(t, n) {
+    var d = new Date(t.getTime());
+    while (n > 0) { d.setDate(d.getDate() + 1); var g = d.getDay(); if (g !== 0 && g !== 6) n--; }
+    return d;
+  }
+  (function () {
+    var u = EK.uretimGun || [2, 4], k = EK.kargoGun || [1, 3], bugun = new Date();
+    var f = function (d) { return d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', weekday: 'long' }); };
+    $('nh-teslim').innerHTML = '🚚 Bugün sipariş verirseniz tahmini teslim: <b>' + f(isGunuEkle(bugun, u[0] + k[0])) + ' – ' + f(isGunuEkle(bugun, u[1] + k[1])) + '</b>';
+  })();
+
+  /* ---------- Hesaplama ---------- */
+  function sat(a, b, cls) { return '<div class="nh-sat' + (cls ? ' ' + cls : '') + '"><span>' + a + '</span><span>' + b + '</span></div>'; }
+  function secimMetni() {
+    var p = [];
+    var s = seriBul(durum.seri); if (s) p.push(s.ad + (s.etiket ? ' (' + s.etiket + ')' : ''));
+    p.push('Renk: ' + durum.renk);
+    if (KOD === 'plise') {
+      p.push('Profil: ' + durum.profil);
+      var m = EK.montajlar.filter(function (x) { return x.kod === durum.montaj; })[0]; if (m) p.push(m.ad);
+      var c = EK.ciftli.filter(function (x) { return x.kod === durum.ciftli; })[0]; if (c) p.push(c.ad);
+    }
+    return p.join(' · ');
+  }
+
+  function hesapla() {
+    durum.satirSonuc = []; durum.toplam = 0;
+    var montajObj = KOD === 'plise' ? EK.montajlar.filter(function (x) { return x.kod === durum.montaj; })[0] : null;
+    var ciftliObj = KOD === 'plise' ? EK.ciftli.filter(function (x) { return x.kod === durum.ciftli; })[0] : null;
+    durum.montajObj = montajObj; durum.ciftliObj = ciftliObj;
+    var montajUcret = montajObj ? montajObj.ucret : 0;
+    var html = '', hataVar = false, eksikVar = false, jumboVar = false, toplam = 0, liste = 0, alan = 0, perdeSayi = 0, aciklamalar = [];
+    var inputs = $('nh-satirlar').querySelectorAll('.nh-satir');
+
+    satirlar.forEach(function (s, i) {
+      var en = String(s.en).trim(), boy = String(s.boy).trim();
+      var adet = parseInt(s.adet, 10); if (!(adet >= 1)) adet = 1;
+      var rowEl = inputs[i];
+      if (rowEl) rowEl.querySelectorAll('input').forEach(function (x) { x.removeAttribute('aria-invalid'); });
+      if (!en && !boy) return;
+      var etiket = (i + 1) + '. ' + SATIR_AD;
+      if (!en || !boy) {
+        eksikVar = true;
+        html += sat(etiket, (en ? 'BOY' : 'EN') + ' ölçüsünü girin', 'nh-hatali');
+        return;
+      }
+      var r = window.Pricing.tryCalculate({ rule: kural, widthCm: en, heightCm: boy, quantity: adet });
+      if (!r.ok) {
+        hataVar = true;
+        var m = r.message;
+        if (r.code === 'JUMBO_MAX_WIDTH_EXCEEDED' || r.code === 'MAX_WIDTH_EXCEEDED') m += ' WhatsApp’tan yazın, özel fiyat verelim.';
+        html += sat(etiket, m, 'nh-hatali');
+        if (rowEl) {
+          var alan2 = /HEIGHT/.test(r.code) ? 'boy' : 'en';
+          var x = rowEl.querySelector('[data-alan="' + alan2 + '"]'); if (x) x.setAttribute('aria-invalid', 'true');
+        }
+        return;
+      }
+      var h = r.result;
+      var ciftliUcret = ciftliObj && ciftliObj.ekM2 ? window.Pricing.money(ciftliObj.ekM2 * h.billableAreaM2 * adet) : 0;
+      var tutar = Math.ceil(window.Pricing.money(h.totalPrice + montajUcret + ciftliUcret));
+      var listeTutar = h.hasDiscount ? Math.ceil(h.listTotalPrice + montajUcret + ciftliUcret) : tutar;
+      if (h.pricingMode === 'jumbo') jumboVar = true;
+      if (h.explanation && h.explanation.length) aciklamalar.push(etiket + ': ' + h.explanation.join(' '));
+      durum.satirSonuc.push({ no: i + 1, h: h, adet: adet, tutar: tutar });
+      toplam += tutar; liste += listeTutar; alan += h.billableAreaM2 * adet; perdeSayi += adet;
+      html += sat(etiket + ' · ' + nf(h.enteredWidthCm) + ' × ' + nf(h.enteredHeightCm) + ' cm' + (adet > 1 ? ' × ' + adet + ' adet' : ''), tl(tutar));
+    });
+
+    var ozet = '<p class="nh-secim"><b>Seçimleriniz:</b> ' + esc(secimMetni()) + '</p>';
+    if (!html) {
+      ozet += '<p class="nh-not" style="margin:0">Ölçülerinizi girin, fiyatınız anında hesaplansın.' + (KOD === 'plise' ? ' Cam balkonun her kanadı için “Kanat ekle” ile yeni satır açabilirsiniz.' : '') + '</p>';
+    } else {
+      ozet += (jumboVar ? '<div class="nh-jumbo"><b>Jumbo sistem uygulandı.</b> EN ölçüsü ' + kural.standardMaxWidthCm + ' cm üzerinde olan perdelerde daha dayanıklı Jumbo Boru + Lüks Seri mekanizma kullanılacak.</div>' : '') + html;
+      if (durum.satirSonuc.length) {
+        ozet += sat('Toplam alan', nf(Math.round(alan * 10000) / 10000) + ' m² · ' + perdeSayi + ' ' + SATIR_AD);
+        var m2ler = durum.satirSonuc.map(function (x) { return x.h.pricePerM2; }).filter(function (v, i, a) { return a.indexOf(v) === i; });
+        var ekM2 = ciftliObj ? ciftliObj.ekM2 : 0;
+        ozet += sat('m² fiyatı', m2ler.map(function (v) { return tl(v + ekM2); }).join(' / '));
+        if (montajUcret) ozet += sat(montajObj.ad, '+' + tl(montajUcret) + ' × ' + durum.satirSonuc.length + ' satır (fiyata dahil)');
+        ozet += '<div class="nh-top"><span>Toplam</span><span>' + (liste > toplam ? '<span class="nh-eski">' + tl(liste) + '</span>' : '') + '<b>' + tl(toplam) + '</b></span></div>';
+        if (hataVar || eksikVar) ozet += '<p class="nh-hata" style="margin-top:6px">Kırmızı satırları düzeltin; toplam yalnızca geçerli ölçüleri içeriyor.</p>';
+      }
+      if (aciklamalar.length) ozet += '<p class="nh-not">' + esc(aciklamalar.join(' ')) + '</p>';
+    }
+    $('nh-ozet').innerHTML = ozet;
+    durum.toplam = (hataVar || eksikVar) ? 0 : toplam;
+    $('nh-ekle').disabled = !(durum.toplam > 0 && BIRIM);
+    $('nh-bar-tutar').textContent = tl(toplam);
+    barGuncelle();
+    waGuncelle();
+  }
+
+  /* ---------- Sepet / WhatsApp ---------- */
+  function ozellikler(sr) {
+    var h = sr.h, n = durum.satirSonuc.length, p = { 'Ürün': URUN };
+    var s = seriBul(durum.seri); if (s) p['Kumaş serisi'] = s.ad + (s.etiket ? ' (' + s.etiket + ')' : '');
+    p['Renk'] = durum.renk;
+    if (n > 1 || satirlar.length > 1) p[SATIR_AD_B + ' no'] = sr.no + '. ' + SATIR_AD;
+    p['Ölçü (EN × BOY)'] = nf(h.enteredWidthCm) + ' × ' + nf(h.enteredHeightCm) + ' cm';
+    p['Fiyatlandırılan ölçü'] = nf(h.billableWidthCm) + ' × ' + nf(h.billableHeightCm) + ' cm (' + nf(h.billableAreaM2) + ' m²)';
+    p['Perde adedi'] = String(sr.adet);
+    if (h.pricingMode === 'jumbo') p['Sistem'] = h.systemName;
+    if (KOD === 'plise') {
+      p['Profil rengi'] = durum.profil;
+      if (durum.montajObj) p['Montaj'] = durum.montajObj.ad;
+      if (durum.ciftliObj) p['Sistem tipi'] = durum.ciftliObj.ad;
+    }
+    p['Perde tutarı'] = tl(sr.tutar);
+    p['Ölçü onayı'] = 'Müşteri ölçülerini kontrol ettiğini onayladı';
+    return p;
+  }
+
+  function waGuncelle() {
+    var t = 'Merhaba, ' + URUN + ' için bilgi almak istiyorum.';
+    if (durum.satirSonuc.length) {
+      t = 'Merhaba, web sitenizden fiyat hesapladım.\n\nÜrün: ' + URUN + '\n' + secimMetni().split(' · ').join('\n') + '\n\n';
+      durum.satirSonuc.forEach(function (sr) {
+        t += sr.no + '. ' + SATIR_AD + ': ' + nf(sr.h.enteredWidthCm) + ' × ' + nf(sr.h.enteredHeightCm) + ' cm' + (sr.adet > 1 ? ' × ' + sr.adet + ' adet' : '') + ' = ' + tl(sr.tutar) + '\n';
+      });
+      t += '\nToplam: ' + tl(durum.toplam || durum.satirSonuc.reduce(function (a, b) { return a + b.tutar; }, 0)) + '\n\nSipariş vermek istiyorum.';
+    }
+    $('nh-wa').href = 'https://wa.me/' + EK.whatsapp + '?text=' + encodeURIComponent(t);
+  }
+
+  function onayKontrol() {
+    if ($('nh-onay').checked) return true;
+    var k = $('nh-onay-kutu'); k.classList.add('nh-uyar');
+    k.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return false;
+  }
+  $('nh-onay').addEventListener('change', function () { if (this.checked) $('nh-onay-kutu').classList.remove('nh-uyar'); });
+
+  function sepeteEkle() {
+    if (!(durum.toplam > 0) || !BIRIM) { $('nh-ozet').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+    if (!onayKontrol()) return;
+    var btn = $('nh-ekle'), bar = $('nh-bar-btn');
+    btn.disabled = true; bar.disabled = true; btn.textContent = bar.textContent = 'Ekleniyor…';
+    var items = durum.satirSonuc.map(function (sr) { return { id: Number(BIRIM), quantity: sr.tutar, properties: ozellikler(sr) }; });
+    fetch('/cart/add.js', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ items: items })
+    }).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw j; return j; }); })
+      .then(function () { window.location.href = '/cart'; })
+      .catch(function (e) {
+        btn.disabled = false; bar.disabled = false; btn.textContent = bar.textContent = 'Sepete Ekle';
+        $('nh-ozet').insertAdjacentHTML('beforeend', '<p class="nh-hata">Sepete eklenemedi' + (e && e.description ? ': ' + esc(e.description) : '') + '. WhatsApp’tan sipariş verebilirsiniz.</p>');
+      });
+  }
+  $('nh-ekle').addEventListener('click', sepeteEkle);
+  $('nh-bar-btn').addEventListener('click', sepeteEkle);
+
+  /* ---------- Telefonda sabit fiyat çubuğu ---------- */
+  var anaButonGorunur = true;
+  function barGuncelle() {
+    var goster = durum.toplam > 0 && !anaButonGorunur;
+    $('nh-bar').hidden = !goster;
+    document.body.classList.toggle('nh-bar-acik', goster);
+  }
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (g) { anaButonGorunur = g[0].isIntersecting; barGuncelle(); }).observe($('nh-ekle'));
+  }
+
+  satirlariCiz();
+  hesapla();
+})();
+</script>
+{%- endif -%}
