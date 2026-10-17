@@ -1,0 +1,58 @@
+{%- comment -%}
+  Noveva Home — Ana sayfa "Perdeni Seç" ürün kartları. Kartlar doğrudan ürün (hesaplayıcı) sayfasına gider.
+  Fiyatlar Shopify'daki vitrin fiyatından (m² fiyatı) otomatik gelir.
+  Biçim: ürün handle|kısa açıklama|etiket
+{%- endcomment -%}
+{%- capture nh_urun_liste -%}
+plise-perde|Cam balkon ve pencere için katlanır perde. 5 kumaş serisi, %100 karartmaya kadar.|En çok tercih edilen
+zebra-perde|Şeritleri kaydırarak ışığı dilediğiniz kadar ayarlayın.|
+stor-perde|Sade, kullanışlı ve ekonomik; her odaya uyar.|
+ahsap-jaluzi-perde|Doğal ahşap dokusuyla sıcak ve şık görünüm.|
+{%- endcapture -%}
+{%- assign nh_urunler = nh_urun_liste | strip | newline_to_br | split: '<br />' -%}
+<style>
+  .nh-ur{max-width:1200px;margin:0 auto;padding:0 16px}
+  .nh-ur-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .nh-ur-kart{display:flex;flex-direction:column;border-radius:14px;overflow:hidden;background:#fff;border:1px solid rgba(0,0,0,.08);text-decoration:none;color:inherit;transition:transform .15s,box-shadow .15s}
+  .nh-ur-kart:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(0,0,0,.09)}
+  .nh-ur-img{position:relative;aspect-ratio:4/5;background:#f2f2f0;overflow:hidden}
+  .nh-ur-img img{width:100%;height:100%;object-fit:cover;display:block}
+  .nh-ur-et{position:absolute;left:10px;top:10px;background:#111;color:#fff;border-radius:999px;padding:3px 10px;font-size:1.15rem;font-weight:600}
+  .nh-ur-ic{padding:14px;display:flex;flex-direction:column;gap:6px;flex:1}
+  .nh-ur-ic b{font-size:1.7rem;line-height:1.25}
+  .nh-ur-ic p{margin:0;font-size:1.3rem;opacity:.75;line-height:1.45}
+  .nh-ur-fy{margin-top:auto;padding-top:6px;font-size:1.3rem}
+  .nh-ur-fy s{opacity:.5;margin-right:4px}
+  .nh-ur-fy strong{font-size:1.9rem}
+  .nh-ur-btn{display:block;text-align:center;background:#111;color:#fff;border-radius:999px;padding:10px;font-weight:600;font-size:1.35rem;margin-top:8px}
+  @media (max-width:989px){.nh-ur-grid{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:480px){.nh-ur-grid{gap:10px}.nh-ur-ic{padding:10px}.nh-ur-ic b{font-size:1.5rem}.nh-ur-ic p{display:none}.nh-ur-fy strong{font-size:1.6rem}.nh-ur-btn{font-size:1.25rem;padding:9px 6px}}
+</style>
+<div class="nh-ur">
+  <div class="nh-ur-grid">
+    {%- for satir in nh_urunler -%}
+      {%- assign s = satir | strip | split: '|' -%}
+      {%- assign u = all_products[s[0]] -%}
+      {%- if u != blank and u.id -%}
+        {%- assign ad = u.title | split: ' – ' | first -%}
+        <a class="nh-ur-kart" href="{{ u.url }}">
+          <div class="nh-ur-img">
+            {%- if u.featured_media -%}
+              {{ u.featured_media | image_url: width: 700 | image_tag: loading: 'lazy', widths: '300,450,700', sizes: '(max-width: 989px) 50vw, 25vw', alt: ad }}
+            {%- endif -%}
+            {%- if s[2] != blank -%}<span class="nh-ur-et">{{ s[2] }}</span>{%- endif -%}
+          </div>
+          <div class="nh-ur-ic">
+            <b>{{ ad }}</b>
+            <p>{{ s[1] }}</p>
+            <div class="nh-ur-fy">
+              {%- if u.compare_at_price > u.price -%}<s>{{ u.compare_at_price | money_without_trailing_zeros }}</s>{%- endif -%}
+              <strong>{{ u.price | money_without_trailing_zeros }}</strong> /m²'den
+            </div>
+            <span class="nh-ur-btn">Fiyatını hesapla</span>
+          </div>
+        </a>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</div>

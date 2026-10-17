@@ -1,0 +1,23 @@
+{%- comment -%} Noveva Home — Ana sayfa son çağrı bandı {%- endcomment -%}
+<style>
+  .nh-sc{max-width:1200px;margin:0 auto;padding:0 16px}
+  .nh-sc-ic{border-radius:18px;padding:36px 24px;text-align:center;color:#fff;background:linear-gradient(rgba(17,17,17,.62),rgba(17,17,17,.62)),url('{{ images['gercek-uygulama-01.jpg'] | image_url: width: 1600 }}') center/cover}
+  .nh-sc-ic h2{color:#fff;margin:0 0 8px}
+  .nh-sc-ic p{margin:0 0 20px;font-size:1.6rem;opacity:.92}
+  .nh-sc-btn{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .nh-sc-btn a{border-radius:999px;padding:13px 24px;font-weight:600;font-size:1.5rem;text-decoration:none}
+  .nh-sc-btn .nh-b1{background:#fff;color:#111}
+  .nh-sc-btn .nh-b2{background:#25D366;color:#fff}
+  .nh-sc small{display:block;margin-top:14px;font-size:1.25rem;opacity:.85}
+</style>
+<div class="nh-sc">
+  <div class="nh-sc-ic">
+    <h2 class="h1">Ölçünü gir, fiyatını 10 saniyede gör</h2>
+    <p>Ölçüye özel perdeniz 2–4 iş gününde üretilir, ücretsiz kargoyla kapınıza gelir.</p>
+    <div class="nh-sc-btn">
+      <a class="nh-b1" href="/products/plise-perde">Fiyatımı hesapla</a>
+      <a class="nh-b2" href="https://wa.me/905443028616?text={{ 'Merhaba, perde siparişi hakkında bilgi almak istiyorum.' | url_encode }}" target="_blank" rel="noopener">WhatsApp'tan sor</a>
+    </div>
+    <small>5.000 ₺ ve üzeri alışverişlerde peşin fiyatına 3 taksit · Kredi kartına 12 taksite varan seçenekler</small>
+  </div>
+</div>

@@ -1,0 +1,18 @@
+{%- comment -%} Noveva Home — Ana sayfa güven şeridi (slaytın hemen altı) {%- endcomment -%}
+<style>
+  .nh-gv{max-width:1200px;margin:0 auto;padding:0 16px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .nh-gv-k{display:flex;align-items:center;gap:12px;padding:14px;border-radius:12px;background:rgba(255,255,255,.7);border:1px solid rgba(0,0,0,.07)}
+  .nh-gv-i{flex:0 0 42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#111;color:#fff}
+  .nh-gv-i svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .nh-gv-k b{display:block;font-size:1.4rem;line-height:1.25}
+  .nh-gv-k span{font-size:1.2rem;opacity:.72;line-height:1.3}
+  .nh-gv-k a{color:inherit;text-decoration:none}
+  @media (max-width:989px){.nh-gv{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:420px){.nh-gv-k{padding:10px;gap:9px}.nh-gv-i{flex-basis:36px;height:36px}.nh-gv-k b{font-size:1.3rem}}
+</style>
+<div class="nh-gv">
+  <div class="nh-gv-k"><span class="nh-gv-i"><svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="17.5" r="1.6"/><circle cx="17" cy="17.5" r="1.6"/></svg></span><div><b>Ücretsiz Kargo</b><span>Türkiye geneli, tüm siparişlerde</span></div></div>
+  <div class="nh-gv-k"><span class="nh-gv-i"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><b>2–4 Günde Üretim</b><span>Ölçünüze özel, hızlı teslim</span></div></div>
+  <div class="nh-gv-k"><span class="nh-gv-i"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M7 15h4"/></svg></span><div><b>Peşin Fiyatına 3 Taksit</b><span>5.000 ₺ ve üzeri alışverişlerde</span></div></div>
+  <div class="nh-gv-k"><a href="https://wa.me/905443028616?text={{ 'Merhaba, ölçü almak için yardım istiyorum.' | url_encode }}" target="_blank" rel="noopener" style="display:flex;align-items:center;gap:12px"><span class="nh-gv-i" style="background:#25D366"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 1-13.5 7.8L3 21l1.2-4.4A9 9 0 1 1 21 12z"/></svg></span><div><b>WhatsApp Ölçü Desteği</b><span>Ölçünüzü birlikte kontrol edelim</span></div></a></div>
+</div>
