@@ -572,7 +572,7 @@
       "name": "Yorumlar",
       "settings": {
         "title": "Sizden Gelen Güzel Yorumlar",
-        "subtitle": "Web sitemizden ve Trendyol mağazamızdan gelen yorumlar; Trendyol yorumları değiştirilmeden aktarılmıştır.",
+        "subtitle": "",
         "heading_size": "h1",
         "auto_rotate": false,
         "change_slides_speed": 5,
