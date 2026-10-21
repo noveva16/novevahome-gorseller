@@ -39,9 +39,9 @@
         {%- assign y = satir | strip | split: '|' -%}
         {%- if y.size >= 4 -%}
         <div class="nh-yr-kart">
-          <span class="nh-yr-meta">{{ y[1] | escape }}{% if y[2] != blank %} · Ölçü: {{ y[2] | escape }} cm{% endif %}</span>
+          <span class="nh-yr-meta">{{ y[1] | escape }}</span>
           <p>“{{ y[3] | escape }}”</p>
-          <div class="nh-yr-alt"><small>{{ y[0] | escape }}</small><span class="nh-yr-meta">Trendyol alıcısı</span></div>
+          <small>{{ y[0] | escape }}</small>
         </div>
         {%- endif -%}
       {%- endfor -%}
