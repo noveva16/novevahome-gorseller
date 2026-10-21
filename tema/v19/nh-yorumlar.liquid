@@ -1,0 +1,79 @@
+{%- comment -%}
+  Noveva Home — Ürün sayfası müşteri yorumları.
+  1) Ürünün "Trendyol yorumları" alanı doluysa (Shopify Admin > Ürün > Meta alanlar) o ürünün Trendyol yorumları gösterilir.
+     Satır biçimi: Ad|Tarih|Ölçü|Yorum   (her yorum ayrı satır, yorum metni değiştirilmeden)
+  2) Boşsa aşağıdaki genel liste gösterilir ("Ad|Yıldız|Yorum").
+{%- endcomment -%}
+{%- assign nh_ty = product.metafields.custom.trendyol_yorumlar.value -%}
+<style>
+  .nh-yr{max-width:1200px;margin:0 auto;padding:0 16px}
+  .nh-yr-bas{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 16px}
+  .nh-yr-bas h2{margin:0}
+  .nh-yr-ort{font-size:1.4rem}
+  .nh-yr-ort b{font-size:1.8rem}
+  .nh-yr-yildiz{color:#f5a623;letter-spacing:1px}
+  .nh-yr-liste{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px}
+  .nh-yr-kart{flex:0 0 300px;scroll-snap-align:start;border:1px solid rgba(0,0,0,.1);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px;background:rgba(255,255,255,.65)}
+  .nh-yr-kart p{margin:0;font-size:1.4rem;line-height:1.55}
+  .nh-yr-kart small{margin-top:auto;font-weight:600;font-size:1.3rem;opacity:.8}
+  .nh-yr-kart .nh-yr-meta{font-size:1.2rem;opacity:.65}
+  .nh-yr-kart .nh-yr-alt{margin-top:auto;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+  .nh-yr-kart .nh-yr-alt small{margin:0}
+  .nh-yr-not{margin:10px 0 0;font-size:1.2rem;opacity:.65}
+  .nh-yr-ty{display:inline-block;background:#f27a1a;color:#fff;border-radius:6px;padding:1px 7px;font-size:1.15rem;font-weight:600;margin-left:6px;vertical-align:2px}
+  @media (max-width:749px){.nh-yr-kart{flex-basis:78%}}
+</style>
+{%- if nh_ty != blank -%}
+  {%- assign nh_satirlar = nh_ty | strip | newline_to_br | split: '<br />' -%}
+  {%- assign nh_puan = product.metafields.custom.trendyol_puan.value -%}
+  {%- assign nh_deg = product.metafields.custom.trendyol_degerlendirme.value -%}
+  <div class="nh-yr" id="musteri-yorumlari">
+    <div class="nh-yr-bas">
+      <h2 class="h2">Müşterilerimiz ne diyor? <span class="nh-yr-ty">Trendyol</span></h2>
+      {%- if nh_puan != blank -%}
+      <span class="nh-yr-ort"><span class="nh-yr-yildiz" aria-hidden="true">★</span> <b>{{ nh_puan }}</b>{% if nh_deg != blank %} · {{ nh_deg }} değerlendirme{% endif %} <span style="opacity:.7">(Trendyol)</span></span>
+      {%- endif -%}
+    </div>
+    <div class="nh-yr-liste">
+      {%- for satir in nh_satirlar -%}
+        {%- assign y = satir | strip | split: '|' -%}
+        {%- if y.size >= 4 -%}
+        <div class="nh-yr-kart">
+          <span class="nh-yr-meta">{{ y[1] | escape }}{% if y[2] != blank %} · Ölçü: {{ y[2] | escape }} cm{% endif %}</span>
+          <p>“{{ y[3] | escape }}”</p>
+          <div class="nh-yr-alt"><small>{{ y[0] | escape }}</small><span class="nh-yr-meta">Trendyol alıcısı</span></div>
+        </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+    <p class="nh-yr-not">Bu yorumlar, Noveva Home mağazamızın Trendyol'daki bu ürününe yapılan en yeni yorumlardır; değiştirilmeden aktarılmıştır. Puan ve değerlendirme sayısı Trendyol'a aittir.</p>
+  </div>
+{%- else -%}
+{%- capture nh_yorum_liste -%}
+Aslıhan C.|5|Perdeler tam istediğim gibi, hem kaliteli hem şık. Hızlı kargo güzel paketleme herşey için teşekkürler
+H** A**|5|paketleme çok özenliydi. perde çok kaliteli ve gayet kalın teşekkürler çok memnun kaldım
+Saliha T.|5|Harika bir stor hem kalite hemde ebatları istediğim gibi geldi. Kargo hızlıydı satıcıya teşekkür ederim kaliteli ve sorunsuz ürün gönderdiği için tavsiye ederim.
+Burak Y.|5|Salonuma çok yakıştı, herkese tavsiye ederim.
+Neslihan Ö.|5|Siparişim hızlı geldi, paketleme mükemmeldi
+Sibel D.|5|Evimdeki dekorasyonun havası değişti, teşekkürler!
+Senda A.|5|çok beğendim harika
+{%- endcapture -%}
+{%- assign nh_yorumlar = nh_yorum_liste | strip | newline_to_br | split: '<br />' -%}
+<div class="nh-yr" id="musteri-yorumlari">
+  <div class="nh-yr-bas">
+    <h2 class="h2">Müşterilerimiz ne diyor?</h2>
+    <span class="nh-yr-ort"><span class="nh-yr-yildiz" aria-hidden="true">★★★★★</span> <b>5,0</b> · {{ nh_yorumlar.size }} yorum</span>
+  </div>
+  <div class="nh-yr-liste">
+    {%- for satir in nh_yorumlar -%}
+      {%- assign y = satir | strip | split: '|' -%}
+      {%- assign yildiz = y[1] | plus: 0 -%}
+      <div class="nh-yr-kart">
+        <span class="nh-yr-yildiz" aria-label="{{ yildiz }} yıldız">{% for i in (1..yildiz) %}★{% endfor %}</span>
+        <p>“{{ y[2] }}”</p>
+        <small>{{ y[0] }}</small>
+      </div>
+    {%- endfor -%}
+  </div>
+</div>
+{%- endif -%}
