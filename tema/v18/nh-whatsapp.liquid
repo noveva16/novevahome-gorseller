@@ -1,0 +1,88 @@
+{%- comment -%} Noveva Home — sabit WhatsApp ve telefon butonu + sepet düzenleme + ölçüsüz sipariş koruması {%- endcomment -%}
+{%- if request.page_type == 'product' and product.handle == 'olcuye-ozel-perde-siparisi' -%}
+  <script>location.replace('/');</script>
+{%- endif -%}
+<style>
+  .nh-sabit{position:fixed;right:16px;bottom:18px;z-index:60;display:flex;flex-direction:column;gap:10px}
+  .nh-sabit a{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,.18);color:#fff}
+  .nh-sabit .nh-s-wa{background:#25D366}
+  .nh-sabit .nh-s-tel{background:#1f2a2e}
+  .nh-sabit svg{width:28px;height:28px;fill:#fff}
+  @media (min-width:990px){.nh-sabit .nh-s-tel{display:none}}
+  .nh-birim-adet{font-size:1.3rem;opacity:.75}
+  .nh-koruma{position:fixed;left:50%;top:20px;transform:translateX(-50%);z-index:1000;max-width:92vw;width:440px;background:#fff;color:#111;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.25);padding:16px 18px;font-size:1.4rem;line-height:1.5}
+  .nh-koruma b{display:block;font-size:1.5rem;margin-bottom:4px}
+  .nh-koruma a{display:inline-block;margin-top:10px;background:#111;color:#fff;border-radius:999px;padding:8px 16px;text-decoration:none;font-weight:600}
+</style>
+<div class="nh-sabit">
+  <a class="nh-s-tel" href="tel:+905443028616" aria-label="Bizi arayın"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15.2 15.2 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg></a>
+  <a class="nh-s-wa" href="https://wa.me/905443028616?text={{ 'Merhaba, perde modelleri hakkında bilgi almak istiyorum.' | url_encode }}" target="_blank" rel="noopener" aria-label="WhatsApp ile yazın"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.15l-.3-.18-3 .78.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.25-.12-1.47-.72-1.7-.8s-.39-.12-.56.12-.64.8-.78.97-.29.18-.54.06a6.7 6.7 0 0 1-3.3-2.9c-.25-.43.25-.4.71-1.33a.45.45 0 0 0-.02-.42c-.06-.12-.56-1.35-.77-1.85s-.4-.42-.56-.43h-.48a.92.92 0 0 0-.67.31 2.8 2.8 0 0 0-.87 2.08 4.9 4.9 0 0 0 1.02 2.6 11.2 11.2 0 0 0 4.3 3.8c1.6.69 2.2.75 3 .63a2.55 2.55 0 0 0 1.68-1.18 2.1 2.1 0 0 0 .14-1.18c-.06-.1-.23-.16-.48-.28z"/></svg></a>
+</div>
+{%- comment -%}
+  1) Sepette "Ölçüye Özel Perde Siparişi" satırlarında adet kutusunu gizle, ürün adını göster.
+  2) KORUMA: Ölçüye özel ürünler (plise, zebra, stor, jaluzi) yalnızca fiyat hesaplayıcıdan eklenebilir.
+     Sepete hesaplayıcı dışından (hızlı ekle vb.) düşen satırlar otomatik çıkarılır ve müşteri ürün sayfasına yönlendirilir.
+{%- endcomment -%}
+<script>
+(function () {
+  var BIRIM = {{ all_products['olcuye-ozel-perde-siparisi'].selected_or_first_available_variant.id | default: 0 }};
+  var OLCU_URUNLER = ['plise-perde', 'zebra-perde', 'stor-perde', 'lazer-kesim-stor-perde', 'ahsap-jaluzi-perde'];
+  var calisiyor = false, korumaYapiliyor = false;
+
+  function uyari(link) {
+    if (document.querySelector('.nh-koruma')) return;
+    var d = document.createElement('div'); d.className = 'nh-koruma'; d.setAttribute('role', 'alert');
+    d.innerHTML = '<b>Ölçünüzü girmeniz gerekiyor</b>Perdelerimiz ölçünüze özel üretildiği için fiyat, ürün sayfasındaki hesaplayıcıda ölçünüze göre hesaplanır. Ölçüsüz eklenen ürünü sepetten çıkardık.' +
+      '<br><a href="' + link + '">Ölçümü girip fiyatı hesapla</a>';
+    document.body.appendChild(d);
+    setTimeout(function () { window.location.href = link; }, 4500);
+  }
+
+  function koru(c) {
+    if (korumaYapiliyor || !c || !c.items) return false;
+    var sil = {}, link = null;
+    c.items.forEach(function (it) {
+      var olcusuz = OLCU_URUNLER.indexOf(it.handle) > -1 ||
+        (BIRIM && it.variant_id === BIRIM && !(it.properties && it.properties['Ürün']));
+      if (olcusuz) { sil[it.key] = 0; if (!link) link = OLCU_URUNLER.indexOf(it.handle) > -1 ? '/products/' + it.handle : '/products/plise-perde'; }
+    });
+    if (!link) return false;
+    korumaYapiliyor = true;
+    fetch('/cart/update.js', { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ updates: sil }) })
+      .catch(function () {}).then(function () { uyari(link); });
+    return true;
+  }
+
+  function duzenle(zorla) {
+    var yeni = document.querySelectorAll('[id^="CartItem-"]:not([data-nh-ok]),[id^="CartDrawer-Item-"]:not([data-nh-ok]),#cart-notification-product:not([data-nh-ok])');
+    if (calisiyor || (!yeni.length && !zorla)) return; calisiyor = true;
+    fetch('/cart.js', { headers: { Accept: 'application/json' } }).then(function (r) { return r.json(); }).then(function (c) {
+      yeni.forEach(function (row) { row.setAttribute('data-nh-ok', '1'); });
+      if (koru(c) || !BIRIM) return;
+      c.items.forEach(function (it, i) {
+        if (it.variant_id !== BIRIM) return;
+        var n = i + 1, ad = (it.properties && it.properties['Ürün']) || it.product_title;
+        ['CartItem-' + n, 'CartDrawer-Item-' + n].forEach(function (rid) {
+          var row = document.getElementById(rid); if (!row || row.querySelector('.nh-birim-adet')) return;
+          var q = row.querySelector('quantity-input');
+          if (q) { q.style.display = 'none'; q.insertAdjacentHTML('afterend', '<span class="nh-birim-adet">' + ((it.properties && it.properties['Perde adedi']) || 1) + ' adet perde</span>'); }
+          var nm = row.querySelector('.cart-item__name'); if (nm) nm.textContent = ad;
+          var up = row.querySelector('.cart-item__details .product-option.small-hide'); if (up) up.style.display = 'none';
+        });
+      });
+    }).catch(function () {}).then(function () { calisiyor = false; });
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    {%- if cart.item_count > 0 -%}duzenle(true);{%- else -%}duzenle();{%- endif -%}
+  });
+  var gozcu = new MutationObserver(function () { clearTimeout(window.__nhT); window.__nhT = setTimeout(duzenle, 150); });
+  document.addEventListener('DOMContentLoaded', function () { gozcu.observe(document.body, { childList: true, subtree: true }); });
+  /* Sepet sayısı değişince (hızlı ekleme vb.) kontrol et */
+  document.addEventListener('cart:updated', function () { duzenle(true); });
+  ['cart-drawer', 'cart-notification'].forEach(function (t) {
+    document.addEventListener('DOMContentLoaded', function () {
+      var el = document.querySelector(t); if (el) new MutationObserver(function () { clearTimeout(window.__nhK); window.__nhK = setTimeout(function () { duzenle(true); }, 200); }).observe(el, { childList: true, subtree: true });
+    });
+  });
+})();
+</script>
