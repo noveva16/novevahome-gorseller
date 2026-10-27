@@ -1,0 +1,138 @@
+{%- comment -%}
+  Noveva Home — Videolu ölçü alma rehberi.
+  Kullanım: {% render 'nh-olcu-video', yer: 'urun' | 'pencere' | 'sayfa' | 'makale' %}
+  - urun / pencere : ürün etiketine göre tek video (plise → plise videosu; stor, zebra, lazer stor, jaluzi → zebra/stor videosu)
+  - sayfa          : /pages/olcu-nasil-alinir sayfasında iki video
+  - makale         : yalnızca aşağıdaki blog yazılarında
+  Video adresleri Shopify > İçerik > Dosyalar'daki videolardan alınır (aşağıdaki VIDEO BİLGİLERİ).
+{%- endcomment -%}
+{%- liquid
+  # ---- VIDEO BİLGİLERİ ----
+  assign p_src = 'https://cdn.shopify.com/videos/c/vp/45495383bb334e69887e8db9b1d1f9a6/45495383bb334e69887e8db9b1d1f9a6.HD-720p-1.6Mbps-99030851.mp4'
+  assign p_poster = 'https://cdn.shopify.com/s/files/1/0610/6474/0975/files/preview_images/45495383bb334e69887e8db9b1d1f9a6.thumbnail.0000000000.jpg?v=1793092294'
+  assign p_tarih = '2026-10-27T09:11:05Z'
+  assign p_sure = 'PT1M'
+  assign z_src = 'https://cdn.shopify.com/videos/c/vp/3d83ef3595874a10bce49abc5d2f2fdd/3d83ef3595874a10bce49abc5d2f2fdd.HD-720p-1.6Mbps-99030850.mp4'
+  assign z_poster = 'https://cdn.shopify.com/s/files/1/0610/6474/0975/files/preview_images/3d83ef3595874a10bce49abc5d2f2fdd.thumbnail.0000000000.jpg?v=1793092286'
+  assign z_tarih = '2026-10-27T09:11:05Z'
+  assign z_sure = 'PT43S'
+
+  assign yer = yer | default: 'urun'
+  assign goster_p = false
+  assign goster_z = false
+  case yer
+    when 'sayfa'
+      assign goster_p = true
+      assign goster_z = true
+    when 'makale'
+      case article.handle
+        when 'cam-balkon-perde-olcusu-nasil-alinir'
+          assign goster_p = true
+        when 'perde-olcusu-nasil-alinir'
+          assign goster_z = true
+          assign goster_p = true
+      endcase
+    else
+      for t in product.tags
+        if t == 'nh-plise'
+          assign goster_p = true
+        elsif t == 'nh-stor' or t == 'nh-zebra' or t == 'nh-lazer_stor' or t == 'nh-ahsap_jaluzi'
+          assign goster_z = true
+        endif
+      endfor
+  endcase
+-%}
+{%- if goster_p or goster_z -%}
+{%- unless nh_ov_css -%}
+<style>
+  .nh-ov{margin:0 0 18px}
+  .nh-ov-bas{font-size:1.9rem;margin:0 0 4px}
+  .nh-ov-alt{margin:0 0 14px;opacity:.75;font-size:1.4rem}
+  .nh-ov-grid{display:flex;flex-wrap:wrap;gap:18px}
+  .nh-ov-k{flex:1 1 280px;max-width:380px}
+  .nh-ov-k video{display:block;width:100%;aspect-ratio:9/16;height:auto;border-radius:14px;background:#111;object-fit:cover}
+  .nh-ov-k h3{font-size:1.55rem;margin:10px 0 4px}
+  .nh-ov-k p{margin:0;font-size:1.3rem;opacity:.8;line-height:1.5}
+  .nh-ov-urun{border:1px solid rgba(0,0,0,.1);border-radius:14px;margin:0 0 12px;background:rgba(255,255,255,.6)}
+  .nh-ov-urun summary{display:flex;align-items:center;gap:12px;padding:10px 12px;cursor:pointer;list-style:none;font-weight:600;font-size:1.4rem}
+  .nh-ov-urun summary::-webkit-details-marker{display:none}
+  .nh-ov-urun summary img{width:46px;height:64px;object-fit:cover;border-radius:8px;flex:0 0 46px}
+  .nh-ov-urun summary small{display:block;font-weight:400;opacity:.7;font-size:1.2rem}
+  .nh-ov-urun summary .nh-ov-oynat{margin-left:auto;width:34px;height:34px;border-radius:50%;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex:0 0 34px}
+  .nh-ov-urun[open] summary .nh-ov-oynat{background:#666}
+  .nh-ov-urun .nh-ov-k{max-width:340px;margin:0 auto;padding:0 12px 14px}
+  .nh-ov-pen{margin:12px 0 4px}
+  .nh-ov-pen .nh-ov-k{max-width:300px;margin:0 auto}
+</style>
+{%- endunless -%}
+
+{%- capture nh_ov_p_ad -%}Plise Perde ve Cam Balkon Perdesi Ölçüsü Nasıl Alınır?{%- endcapture -%}
+{%- capture nh_ov_p_ac -%}Pimapen pencerede fitiller hariç cam ölçüsü; vidalı ve yapıştırmalı montaj; kancalı cam balkonda boyda profiller dahil; sabit açılır camda ve köşe camlarda en ölçüsünü 2 cm eksik alma. Noveva Home videolu ölçü rehberi.{%- endcapture -%}
+{%- capture nh_ov_z_ad -%}Zebra Perde ve Stor Perde Ölçüsü Nasıl Alınır?{%- endcapture -%}
+{%- capture nh_ov_z_ac -%}Ölçüyü EN × BOY olarak verin; EN ölçüsünde pencerenin sağından ve solundan 10–15 cm fazla ölçün, BOY ölçüsünü kornişten aşağıya doğru alın. Zebra, stor ve ahşap jaluzi için Noveva Home videolu ölçü rehberi.{%- endcapture -%}
+
+{%- if yer == 'urun' -%}
+  {%- if goster_p -%}{%- assign v_src = p_src -%}{%- assign v_poster = p_poster -%}{%- assign v_ad = nh_ov_p_ad -%}{%- assign v_ac = nh_ov_p_ac -%}{%- assign v_sn = '1 dk' -%}{%- else -%}{%- assign v_src = z_src -%}{%- assign v_poster = z_poster -%}{%- assign v_ad = nh_ov_z_ad -%}{%- assign v_ac = nh_ov_z_ac -%}{%- assign v_sn = '43 sn' -%}{%- endif -%}
+  <details class="nh-ov-urun">
+    <summary>
+      <img src="{{ v_poster }}" alt="" width="46" height="64" loading="lazy">
+      <span>Videolu ölçü rehberi<small>{{ v_sn }} · Doğru ölçüyü adım adım izleyin</small></span>
+      <span class="nh-ov-oynat" aria-hidden="true">▶</span>
+    </summary>
+    <div class="nh-ov-k">
+      <video controls playsinline preload="none" poster="{{ v_poster }}" width="1080" height="1920" title="{{ v_ad | escape }}">
+        <source src="{{ v_src }}" type="video/mp4">
+      </video>
+    </div>
+  </details>
+  <script>
+    document.querySelectorAll('.nh-ov-urun').forEach(function (d) {
+      d.addEventListener('toggle', function () { var v = d.querySelector('video'); if (!v) return; if (d.open) { try { v.play(); } catch (e) {} } else v.pause(); });
+    });
+  </script>
+{%- elsif yer == 'pencere' -%}
+  <div class="nh-ov nh-ov-pen">
+    <div class="nh-ov-k">
+      {%- if goster_p -%}
+      <video controls playsinline preload="none" poster="{{ p_poster }}" width="1080" height="1920" title="{{ nh_ov_p_ad | escape }}"><source src="{{ p_src }}" type="video/mp4"></video>
+      {%- else -%}
+      <video controls playsinline preload="none" poster="{{ z_poster }}" width="1080" height="1920" title="{{ nh_ov_z_ad | escape }}"><source src="{{ z_src }}" type="video/mp4"></video>
+      {%- endif -%}
+    </div>
+  </div>
+{%- else -%}
+  <div class="nh-ov" id="olcu-videolari">
+    {%- if yer == 'sayfa' -%}
+      <h2 class="nh-ov-bas">Videolu Ölçü Alma Rehberi</h2>
+      <p class="nh-ov-alt">Perde türünüze uygun videoyu izleyin; ölçünüzü 1 dakikada doğru alın.</p>
+    {%- else -%}
+      <p class="nh-ov-alt"><b>Videolu anlatım:</b> Ölçü almayı adım adım izleyin.</p>
+    {%- endif -%}
+    <div class="nh-ov-grid">
+      {%- if goster_p -%}
+      <div class="nh-ov-k">
+        <video controls playsinline preload="none" poster="{{ p_poster }}" width="1080" height="1920" title="{{ nh_ov_p_ad | escape }}"><source src="{{ p_src }}" type="video/mp4"></video>
+        <h3>Plise Perde · Cam Balkon Ölçüsü</h3>
+        <p>Pimapen pencere, vidalı/yapıştırmalı ve kancalı cam balkon, sabit cam ve köşe camlar.</p>
+      </div>
+      {%- endif -%}
+      {%- if goster_z -%}
+      <div class="nh-ov-k">
+        <video controls playsinline preload="none" poster="{{ z_poster }}" width="1080" height="1920" title="{{ nh_ov_z_ad | escape }}"><source src="{{ z_src }}" type="video/mp4"></video>
+        <h3>Zebra · Stor · Jaluzi Ölçüsü</h3>
+        <p>EN için sağdan ve soldan 10–15 cm fazla, BOY için kornişten aşağıya doğru ölçün.</p>
+      </div>
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{%- unless yer == 'pencere' -%}
+{%- if goster_p -%}
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoObject","name":{{ nh_ov_p_ad | json }},"description":{{ nh_ov_p_ac | json }},"thumbnailUrl":[{{ p_poster | json }}],"uploadDate":{{ p_tarih | json }},"duration":{{ p_sure | json }},"contentUrl":{{ p_src | json }},"inLanguage":"tr","publisher":{"@type":"Organization","name":"Noveva Home","url":{{ shop.url | json }}}}</script>
+{%- endif -%}
+{%- if goster_z -%}
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"VideoObject","name":{{ nh_ov_z_ad | json }},"description":{{ nh_ov_z_ac | json }},"thumbnailUrl":[{{ z_poster | json }}],"uploadDate":{{ z_tarih | json }},"duration":{{ z_sure | json }},"contentUrl":{{ z_src | json }},"inLanguage":"tr","publisher":{"@type":"Organization","name":"Noveva Home","url":{{ shop.url | json }}}}</script>
+{%- endif -%}
+{%- endunless -%}
+{%- endif -%}

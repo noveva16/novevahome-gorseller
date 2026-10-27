@@ -1,0 +1,122 @@
+{%- comment -%}
+  Noveva Home — Ürün sayfası ekleri (nh-olcu-hesaplayici ile birlikte kullanılır):
+  1) "Ölçü nasıl alınır?" bağlantısı sayfadan çıkmadan açılır pencerede açılır.
+     İçerik /pages/olcu-nasil-alinir sayfasından gelir; pencere ürüne uygun bölümden başlar.
+  2) Telefonda sabit "Fiyat Hesapla" çubuğu: hesaplayıcı ekranda değilken ve henüz fiyat
+     hesaplanmamışken görünür. Fiyat hesaplanınca hesaplayıcının kendi "Sepete Ekle" çubuğu devreye girer.
+{%- endcomment -%}
+{%- liquid
+  assign nh_kod = ''
+  for t in product.tags
+    if t == 'nh-plise' or t == 'nh-stor' or t == 'nh-zebra' or t == 'nh-ahsap_jaluzi' or t == 'nh-lazer_stor'
+      assign nh_kod = t | remove_first: 'nh-'
+    endif
+  endfor
+  assign nh_olcu_sayfa = pages['olcu-nasil-alinir']
+-%}
+{%- if nh_kod != '' -%}
+<style>
+  #nh-hes a.nh-olcu-ac{display:inline-flex;align-items:center;gap:4px;font-weight:600;text-decoration:underline;opacity:1}
+  .nh-olcu-pen{border:0;border-radius:14px;padding:0;max-width:760px;width:calc(100% - 24px);max-height:88vh;overflow:auto}
+  .nh-olcu-pen::backdrop{background:rgba(0,0,0,.45)}
+  .nh-olcu-pen-bas{position:sticky;top:0;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;background:#fff;border-bottom:1px solid rgba(0,0,0,.08)}
+  .nh-olcu-pen-bas h3{margin:0;font-size:1.8rem}
+  .nh-olcu-pen-kap{border:0;background:none;font-size:2.6rem;line-height:1;cursor:pointer;color:inherit;padding:0 4px}
+  .nh-olcu-pen-ic{padding:6px 18px 8px;font-size:1.4rem;line-height:1.6}
+  .nh-olcu-pen-ic h2{font-size:1.7rem;margin:22px 0 8px;scroll-margin-top:70px}
+  .nh-olcu-pen-ic h3{font-size:1.5rem;margin:16px 0 6px}
+  .nh-olcu-pen-ic ul{padding-left:20px;margin:0 0 8px}
+  .nh-olcu-pen-ic table{width:100%;border-collapse:collapse;font-size:1.25rem;display:block;overflow-x:auto}
+  .nh-olcu-pen-ic th,.nh-olcu-pen-ic td{text-align:left;padding:7px 6px;border-bottom:1px solid rgba(0,0,0,.08)}
+  .nh-olcu-pen-ic h2.nh-olcu-vurgu{background:#fff6e5;border-radius:8px;padding:6px 10px;margin-left:-10px;margin-right:-10px}
+  .nh-olcu-pen-alt{position:sticky;bottom:0;padding:12px 18px calc(12px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid rgba(0,0,0,.08)}
+  .nh-olcu-pen-alt .button{width:100%;margin:0}
+  .nh-bar2{position:fixed;left:0;right:0;bottom:0;z-index:70;display:flex;align-items:center;gap:12px;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:#fff;color:#111;box-shadow:0 -4px 18px rgba(0,0,0,.12)}
+  .nh-bar2[hidden]{display:none}
+  .nh-bar2 div{flex:1;line-height:1.2;min-width:0}
+  .nh-bar2 small{display:block;font-size:1.15rem;opacity:.7}
+  .nh-bar2 b{font-size:1.8rem;white-space:nowrap}
+  .nh-bar2 .button{min-width:0;padding:0 18px;margin:0;white-space:nowrap}
+  body.nh-bar2-acik .nh-sabit{bottom:86px}
+  @media (min-width:750px){.nh-bar2{display:none!important}body.nh-bar2-acik .nh-sabit{bottom:18px}}
+</style>
+
+{%- if nh_olcu_sayfa != blank and nh_olcu_sayfa.content != blank -%}
+<dialog class="nh-olcu-pen" id="nh-olcu-pen" aria-labelledby="nh-olcu-pen-baslik">
+  <div class="nh-olcu-pen-bas">
+    <h3 id="nh-olcu-pen-baslik">📏 Ölçü nasıl alınır?</h3>
+    <button type="button" class="nh-olcu-pen-kap" data-olcu-kapat aria-label="Kapat">×</button>
+  </div>
+  <div class="nh-olcu-pen-ic" id="nh-olcu-pen-ic">{% render 'nh-olcu-video', yer: 'pencere', product: product %}{{ nh_olcu_sayfa.content }}</div>
+  <div class="nh-olcu-pen-alt">
+    <button type="button" class="button" data-olcu-gir>Anladım, ölçümü gireyim</button>
+  </div>
+</dialog>
+{%- endif -%}
+
+<div class="nh-bar2" id="nh-bar2" hidden>
+  <div><small>Ölçünüze özel fiyat</small><b id="nh-bar2-fiyat"></b></div>
+  <button type="button" class="button" id="nh-bar2-btn">Fiyat Hesapla</button>
+</div>
+
+<script>
+(function () {
+  var KOD = {{ nh_kod | json }};
+  var $ = function (id) { return document.getElementById(id); };
+
+  function olcuyeGit() {
+    var hedef = $('nh-satirlar') || $('nh-hes'); if (!hedef) return;
+    hedef.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    var inp = hedef.querySelector('[data-alan="en"]');
+    if (inp) setTimeout(function () { inp.focus({ preventScroll: true }); }, 450);
+  }
+
+  /* ---------- Ölçü penceresi ---------- */
+  var pen = $('nh-olcu-pen');
+  if (pen && pen.showModal) {
+    var ANAHTAR = { plise: 'Cam Balkon', stor: 'Stor', lazer_stor: 'Stor', zebra: 'Zebra', ahsap_jaluzi: 'Jaluzi' }[KOD];
+    var bolum = null;
+    if (ANAHTAR) {
+      [].some.call(pen.querySelectorAll('.nh-olcu-pen-ic h2'), function (h) {
+        if (h.textContent.indexOf(ANAHTAR) > -1) { bolum = h; return true; }
+      });
+      if (bolum) bolum.classList.add('nh-olcu-vurgu');
+    }
+    function ac(e) {
+      if (e) e.preventDefault();
+      pen.showModal();
+      if (bolum) bolum.scrollIntoView({ block: 'start' }); else pen.scrollTop = 0;
+    }
+    function kapat() { pen.querySelectorAll('video').forEach(function (v) { v.pause(); }); pen.close(); }
+    document.querySelectorAll('#nh-hes a[href="/pages/olcu-nasil-alinir"]').forEach(function (a) {
+      a.classList.add('nh-olcu-ac');
+      a.removeAttribute('target');
+      a.textContent = '📏 Ölçü nasıl alınır?';
+      a.addEventListener('click', ac);
+    });
+    pen.addEventListener('click', function (e) {
+      if (e.target === pen || e.target.closest('[data-olcu-kapat]')) kapat();
+      else if (e.target.closest('[data-olcu-gir]')) { kapat(); olcuyeGit(); }
+    });
+  }
+
+  /* ---------- Telefonda sabit "Fiyat Hesapla" çubuğu ---------- */
+  var hes = $('nh-hes'), bar = $('nh-bar2'), anaBar = $('nh-bar');
+  if (!hes || !bar || !('IntersectionObserver' in window)) return;
+  var hesGorunur = true;
+  function guncelle() {
+    var fiyatCubuguAcik = anaBar && !anaBar.hidden;
+    var goster = !hesGorunur && !fiyatCubuguAcik;
+    if (goster) {
+      var m2 = document.querySelector('#nh-m2 b');
+      $('nh-bar2-fiyat').textContent = m2 ? m2.textContent + ' / m²' : '';
+    }
+    bar.hidden = !goster;
+    document.body.classList.toggle('nh-bar2-acik', goster);
+  }
+  new IntersectionObserver(function (g) { hesGorunur = g[0].isIntersecting; guncelle(); }).observe(hes);
+  if (anaBar) new MutationObserver(guncelle).observe(anaBar, { attributes: true, attributeFilter: ['hidden'] });
+  $('nh-bar2-btn').addEventListener('click', olcuyeGit);
+})();
+</script>
+{%- endif -%}

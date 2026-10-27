@@ -1,0 +1,302 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "title": {
+          "type": "title",
+          "settings": {
+            "show_vendor_link": true,
+            "title_size": "h2"
+          }
+        },
+        "nh_hesap": {
+          "type": "custom_liquid",
+          "settings": {
+            "custom_liquid": "{% render 'nh-olcu-hesaplayici', product: product %}{% render 'nh-olcu-pencere', product: product %}"
+          }
+        },
+        "nh_sss": {
+          "type": "custom_liquid",
+          "settings": {
+            "custom_liquid": "{% render 'nh-sss', product: product %}"
+          }
+        },
+        "share": {
+          "type": "share",
+          "settings": {
+            "share_label": "Paylaş",
+            "enable_floating_layout": false,
+            "share_on_facebook": true,
+            "share_on_twitter": true,
+            "share_on_pinterest": true,
+            "share_on_email": true,
+            "share_link": true
+          }
+        },
+        "nh_bilgi": {
+          "type": "custom_liquid",
+          "settings": {
+            "custom_liquid": "{% render 'nh-urun-bilgi', product: product %}"
+          }
+        },
+        "nh_video": {
+          "type": "custom_liquid",
+          "settings": {
+            "custom_liquid": "{% render 'nh-olcu-video', yer: 'urun', product: product %}"
+          }
+        }
+      },
+      "block_order": [
+        "title",
+        "nh_hesap",
+        "nh_video",
+        "nh_bilgi",
+        "nh_sss",
+        "share"
+      ],
+      "settings": {
+        "section_width": "page-width",
+        "use_background_input": true,
+        "enable_sticky_info": true,
+        "enable_sticky_cart": false,
+        "sticky_cart": "on_scroll_up",
+        "show_next_prev_products": false,
+        "auto_scroll_up_mobile": false,
+        "inherit_color_scheme": true,
+        "color_scheme": "",
+        "default_image": "product_featured_image",
+        "media_position": "left",
+        "gallery_layout": "thumbnail_slider",
+        "thumbnail_position": "left",
+        "media_size": "small",
+        "image_ratio": "adapt",
+        "image_fit": true,
+        "disable_images_lightbox": false,
+        "mobile_thumbnails": "hide",
+        "hide_variants": false,
+        "enable_video_looping": false,
+        "show_custom_badges_on": "all",
+        "custom_badges_position": "right",
+        "padding_top": 0,
+        "padding_bottom": 40
+      }
+    },
+    "tabs": {
+      "type": "main-product-tabs",
+      "blocks": {
+        "desc": {
+          "type": "description",
+          "settings": {
+            "title": "Ürün Açıklaması",
+            "truncate_description": 0,
+            "read_more_button": "Devamını oku"
+          }
+        }
+      },
+      "block_order": [
+        "desc"
+      ],
+      "settings": {
+        "grid_layout": "grid",
+        "enable_accordion_layout": false,
+        "color_scheme": "background-1",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    },
+    "apps": {
+      "type": "apps",
+      "settings": {
+        "include_margins": true
+      }
+    },
+    "product-recommendations": {
+      "type": "product-recommendations",
+      "settings": {
+        "title": "Diğer Perdelerimiz",
+        "subtitle": "",
+        "heading_size": "h2",
+        "products_to_show": 8,
+        "columns_desktop": 4,
+        "full_width": false,
+        "enable_desktop_slider": true,
+        "color_scheme": "background-1",
+        "image_ratio": "square",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "enable_quick_add": false,
+        "enable_compare": false,
+        "enable_quick_view": false,
+        "show_color_swatches": false,
+        "color_swatches_style": "custom",
+        "inherit_card_color_scheme": true,
+        "card_color_scheme": "",
+        "columns_tablet": "3",
+        "columns_mobile": "1",
+        "swipe_on_mobile": true,
+        "padding_top": 72,
+        "padding_bottom": 40
+      }
+    },
+    "nh_yorumlar": {
+      "type": "custom-liquid",
+      "name": "Müşteri Yorumları",
+      "settings": {
+        "custom_liquid": "{% render 'nh-yorumlar' %}",
+        "color_scheme": "background-1",
+        "padding_top": 24,
+        "padding_bottom": 24
+      }
+    },
+    "nh_reels_stil": {
+      "type": "custom-liquid",
+      "name": "Video kartları stili (görünmez)",
+      "settings": {
+        "custom_liquid": "<style>reel-quick-add,.reel-quick-add-btn-tpl,.shoppable-reels-section quick-add-drawer-opener{display:none!important}{% unless product.handle == 'plise-perde' %}.shoppable-reels-section{display:none!important}{% endunless %}</style>",
+        "color_scheme": "background-1",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "nh_videolar": {
+      "type": "shoppable-reels",
+      "name": "Müşteri videoları",
+      "blocks": {
+        "nh_reel_1": {
+          "type": "_video-reel",
+          "settings": {
+            "video": "shopify://files/videos/noveva-1-uc-tarafli-balkon.mp4",
+            "aspect_ratio": "9:16",
+            "video_autoplay": true,
+            "inherit_color_scheme": true,
+            "popup_fit_mode": "cover"
+          },
+          "blocks": {
+            "video-reel-text": {
+              "type": "text",
+              "static": true,
+              "settings": {
+                "text": "Üç tarafı açık balkon: önce / sonra",
+                "color": "custom",
+                "custom_color": "#ffffff",
+                "custom_line_height": "1.2"
+              }
+            }
+          }
+        },
+        "nh_reel_2": {
+          "type": "_video-reel",
+          "settings": {
+            "video": "shopify://files/videos/noveva-2-sarmasikli-balkon.mp4",
+            "aspect_ratio": "9:16",
+            "video_autoplay": true,
+            "inherit_color_scheme": true,
+            "popup_fit_mode": "cover"
+          },
+          "blocks": {
+            "video-reel-text": {
+              "type": "text",
+              "static": true,
+              "settings": {
+                "text": "Sarmaşıklı balkon: önce / sonra",
+                "color": "custom",
+                "custom_color": "#ffffff",
+                "custom_line_height": "1.2"
+              }
+            }
+          }
+        },
+        "nh_reel_3": {
+          "type": "_video-reel",
+          "settings": {
+            "video": "shopify://files/videos/noveva-3-cam-balkon-once-sonra.mp4",
+            "aspect_ratio": "9:16",
+            "video_autoplay": true,
+            "inherit_color_scheme": true,
+            "popup_fit_mode": "cover"
+          },
+          "blocks": {
+            "video-reel-text": {
+              "type": "text",
+              "static": true,
+              "settings": {
+                "text": "Köşe cam balkon: önce / sonra",
+                "color": "custom",
+                "custom_color": "#ffffff",
+                "custom_line_height": "1.2"
+              }
+            }
+          }
+        },
+        "nh_reel_4": {
+          "type": "_video-reel",
+          "settings": {
+            "video": "shopify://files/videos/noveva-4-pencere-plise-kullanim.mp4",
+            "aspect_ratio": "9:16",
+            "video_autoplay": true,
+            "inherit_color_scheme": true,
+            "popup_fit_mode": "cover"
+          },
+          "blocks": {
+            "video-reel-text": {
+              "type": "text",
+              "static": true,
+              "settings": {
+                "text": "Pencerede plise: elle kolayca açılır, kapanır",
+                "color": "custom",
+                "custom_color": "#ffffff",
+                "custom_line_height": "1.2"
+              }
+            }
+          }
+        }
+      },
+      "block_order": [
+        "nh_reel_1",
+        "nh_reel_3",
+        "nh_reel_2",
+        "nh_reel_4"
+      ],
+      "settings": {
+        "title": "Gerçek uygulamalardan videolar",
+        "subtitle": "",
+        "heading_size": "h1",
+        "columns_desktop": 4,
+        "enable_desktop_slider": true,
+        "section_width": "grid",
+        "open_popup": "fullscreen",
+        "floating_popup_position": "left",
+        "floating_popup_size": "small",
+        "enable_section_box_layout": false,
+        "color_scheme": "background-1",
+        "product_cards_in_thumbnail": "none",
+        "product_cards_in_popup": "none",
+        "columns_tablet": "3",
+        "columns_mobile": "2",
+        "swipe_on_mobile": true,
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    }
+  },
+  "order": [
+    "main",
+    "nh_reels_stil",
+    "nh_videolar",
+    "nh_yorumlar",
+    "tabs",
+    "apps",
+    "product-recommendations"
+  ]
+}

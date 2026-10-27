@@ -1,0 +1,31 @@
+{%- comment -%} Noveva Home — "Nasıl Çalışır?" 4 adım {%- endcomment -%}
+<style>
+  .nh-ns{max-width:1200px;margin:0 auto;padding:0 16px}
+  .nh-ns h2{text-align:center;margin:0 0 6px}
+  .nh-ns .nh-ns-alt{text-align:center;opacity:.75;margin:0 0 24px;font-size:1.5rem}
+  .nh-ns-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;counter-reset:adim}
+  .nh-ns-k{position:relative;padding:22px 16px 18px;border-radius:14px;background:rgba(255,255,255,.7);border:1px solid rgba(0,0,0,.08)}
+  .nh-ns-k::before{counter-increment:adim;content:counter(adim);position:absolute;top:-14px;left:16px;width:30px;height:30px;border-radius:50%;background:#111;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:1.4rem}
+  .nh-ns-k b{display:block;font-size:1.6rem;margin:4px 0 6px}
+  .nh-ns-k p{margin:0;font-size:1.35rem;opacity:.8;line-height:1.5}
+  .nh-ns-k a{text-decoration:underline;color:inherit;font-weight:600}
+  .nh-ns-cta{text-align:center;margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .nh-ns-cta a{border-radius:999px;padding:12px 22px;font-weight:600;font-size:1.4rem;text-decoration:none}
+  .nh-ns-cta .nh-a1{background:#111;color:#fff}
+  .nh-ns-cta .nh-a2{border:1px solid rgba(0,0,0,.3);color:inherit}
+  @media (max-width:989px){.nh-ns-grid{grid-template-columns:repeat(2,1fr);row-gap:24px}}
+</style>
+<div class="nh-ns" id="nasil-calisir">
+  <h2 class="h1">Nasıl Çalışır?</h2>
+  <p class="nh-ns-alt">Ölçüye özel perdeniz 4 kolay adımda kapınızda.</p>
+  <div class="nh-ns-grid">
+    <div class="nh-ns-k"><b>Ölçünü al</b><p>Şerit metreyle EN ve BOY'u santimetre olarak ölç. <a href="/pages/olcu-nasil-alinir">Ölçü nasıl alınır?</a> · <a href="/pages/olcu-nasil-alinir#olcu-videolari">▶ Videolu anlatım</a></p></div>
+    <div class="nh-ns-k"><b>Perdeni seç</b><p>Kumaş serisini, rengini ve montaj tipini seç; fiyatın anında hesaplansın.</p></div>
+    <div class="nh-ns-k"><b>Siparişini ver</b><p>Kredi kartıyla güvenle öde. 5.000 ₺ ve üzerinde peşin fiyatına 3 taksit.</p></div>
+    <div class="nh-ns-k"><b>3–5 günde kargoda</b><p>Perden ölçüne göre 3 iş gününde üretilir, montaj aparatlarıyla ücretsiz kargoya verilir.</p></div>
+  </div>
+  <div class="nh-ns-cta">
+    <a class="nh-a1" href="/products/plise-perde">Fiyatımı hesapla</a>
+    <a class="nh-a2" href="https://wa.me/905443028616?text={{ 'Merhaba, ölçü almak için yardım istiyorum.' | url_encode }}" target="_blank" rel="noopener">Ölçüde yardım iste</a>
+  </div>
+</div>
