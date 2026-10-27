@@ -61,6 +61,10 @@
   .nh-ov-urun summary .nh-ov-oynat{margin-left:auto;width:34px;height:34px;border-radius:50%;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex:0 0 34px}
   .nh-ov-urun[open] summary .nh-ov-oynat{background:#666}
   .nh-ov-urun .nh-ov-k{max-width:340px;margin:0 auto;padding:0 12px 14px}
+  .nh-ov-urun-acik{border:1px solid rgba(0,0,0,.1);border-radius:14px;padding:12px;margin:0 0 12px;background:rgba(255,255,255,.6)}
+  .nh-ov-urun-acik .nh-ov-ub{margin:0 0 10px;font-weight:600;font-size:1.5rem}
+  .nh-ov-urun-acik .nh-ov-ub small{display:block;font-weight:400;opacity:.7;font-size:1.25rem}
+  .nh-ov-urun-acik .nh-ov-k{max-width:320px;margin:0 auto}
   .nh-ov-pen{margin:12px 0 4px}
   .nh-ov-pen .nh-ov-k{max-width:300px;margin:0 auto}
 </style>
@@ -73,23 +77,14 @@
 
 {%- if yer == 'urun' -%}
   {%- if goster_p -%}{%- assign v_src = p_src -%}{%- assign v_poster = p_poster -%}{%- assign v_ad = nh_ov_p_ad -%}{%- assign v_ac = nh_ov_p_ac -%}{%- assign v_sn = '1 dk' -%}{%- else -%}{%- assign v_src = z_src -%}{%- assign v_poster = z_poster -%}{%- assign v_ad = nh_ov_z_ad -%}{%- assign v_ac = nh_ov_z_ac -%}{%- assign v_sn = '43 sn' -%}{%- endif -%}
-  <details class="nh-ov-urun">
-    <summary>
-      <img src="{{ v_poster }}" alt="" width="46" height="64" loading="lazy">
-      <span>Videolu ölçü rehberi<small>{{ v_sn }} · Doğru ölçüyü adım adım izleyin</small></span>
-      <span class="nh-ov-oynat" aria-hidden="true">▶</span>
-    </summary>
+  <div class="nh-ov nh-ov-urun-acik">
+    <p class="nh-ov-ub">▶ Videolu ölçü rehberi <small>{{ v_sn }} · Doğru ölçüyü adım adım izleyin</small></p>
     <div class="nh-ov-k">
       <video controls playsinline preload="none" poster="{{ v_poster }}" width="1080" height="1920" title="{{ v_ad | escape }}">
         <source src="{{ v_src }}" type="video/mp4">
       </video>
     </div>
-  </details>
-  <script>
-    document.querySelectorAll('.nh-ov-urun').forEach(function (d) {
-      d.addEventListener('toggle', function () { var v = d.querySelector('video'); if (!v) return; if (d.open) { try { v.play(); } catch (e) {} } else v.pause(); });
-    });
-  </script>
+  </div>
 {%- elsif yer == 'pencere' -%}
   <div class="nh-ov nh-ov-pen">
     <div class="nh-ov-k">
