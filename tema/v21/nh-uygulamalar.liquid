@@ -1,0 +1,52 @@
+{%- comment -%}
+  Noveva Home — Gerçek Uygulamalar galerisi.
+  Fotoğraflar Shopify > İçerik > Dosyalar'daki gercek-uygulama-XX.jpg dosyalarıdır.
+  Yeni fotoğraf eklemek için listeye "dosyaadi.jpg|Açıklama" satırı ekleyin.
+{%- endcomment -%}
+{%- assign nh_bas = heading_tag | default: 'h2' -%}
+{%- capture nh_liste -%}
+gercek-uygulama-10.jpg|Açık renk plise · Uzun cam balkon
+gercek-uygulama-01.jpg|Antrasit plise · Cam balkon
+gercek-uygulama-03.jpg|Gri plise · Cam balkon
+gercek-uygulama-08.jpg|Beyaz plise · Köşe cam balkon
+gercek-uygulama-05.jpg|Antrasit plise · PVC pencere
+gercek-uygulama-02.jpg|Beyaz plise · Balkon kapısı
+gercek-uygulama-04.jpg|Gri plise · Köşe cam balkon
+gercek-uygulama-07.jpg|Gri plise · Cam balkon
+gercek-uygulama-06.jpg|Beyaz plise · Pencere ve kapı
+gercek-uygulama-09.jpg|Beyaz plise · PVC pencere
+{%- endcapture -%}
+{%- assign nh_satirlar = nh_liste | strip | newline_to_br | split: '<br />' -%}
+<style>
+  .nh-uyg{max-width:1200px;margin:0 auto;padding:0 16px}
+  .nh-uyg .nh-uyg-bas{text-align:center;margin:0 0 6px}
+  .nh-uyg .nh-uyg-alt{text-align:center;opacity:.75;margin:0 0 22px;font-size:1.5rem}
+  .nh-uyg-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+  .nh-uyg-kart{position:relative;display:block;border-radius:14px;overflow:hidden;aspect-ratio:3/4;background:rgba(0,0,0,.05)}
+  .nh-uyg-kart img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
+  .nh-uyg-kart:hover img{transform:scale(1.04)}
+  .nh-uyg-kart span{position:absolute;left:0;right:0;bottom:0;padding:22px 12px 10px;color:#fff;font-size:1.3rem;font-weight:600;background:linear-gradient(transparent,rgba(0,0,0,.65))}
+  .nh-uyg-cta{text-align:center;margin-top:22px}
+  @media (max-width:989px){.nh-uyg-grid{grid-template-columns:repeat(2,1fr);gap:8px}.nh-uyg-kart{aspect-ratio:1/1}.nh-uyg-kart span{font-size:1.15rem;padding:18px 8px 8px}}
+</style>
+<div class="nh-uyg" id="gercek-uygulamalar">
+  {%- if nh_bas == 'h1' -%}
+  <h1 class="h1 nh-uyg-bas">Gerçek Uygulamalar</h1>
+  {%- else -%}
+  <h2 class="h1 nh-uyg-bas"><a href="/pages/gercek-uygulamalar" style="text-decoration:none;color:inherit">Gerçek Uygulamalar</a></h2>
+  {%- endif -%}
+  <p class="nh-uyg-alt">Müşterilerimizin evlerinden, ölçüye özel ürettiğimiz perdeler.</p>
+  <div class="nh-uyg-grid">
+    {%- for satir in nh_satirlar -%}
+      {%- assign parca = satir | strip | split: '|' -%}
+      {%- assign gorsel = images[parca[0]] -%}
+      {%- if gorsel != blank -%}
+        <a class="nh-uyg-kart" href="{{ gorsel | image_url: width: 1600 }}" target="_blank" rel="noopener">
+          {{ gorsel | image_url: width: 700 | image_tag: loading: 'lazy', widths: '350,500,700', sizes: '(max-width: 989px) 50vw, 20vw', alt: parca[1] }}
+          <span>{{ parca[1] }}</span>
+        </a>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+  <div class="nh-uyg-cta"><a class="button" href="/products/plise-perde">Kendi Perdeni Hesapla</a></div>
+</div>
